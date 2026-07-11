@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Select-String -Pattern \"\\(Admin|Setting\\)\" -SimpleMatch)",
+      "PowerShell(Add-Type -AssemblyName System.Drawing; $bmp = New-Object System.Drawing.Bitmap\\(400,700\\); $g = [System.Drawing.Graphics]::FromImage\\($bmp\\); $g.Clear\\([System.Drawing.Color]::CornflowerBlue\\); $bmp.Save\\('C:\\\\Users\\\\amir\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--PROJECTS-salika\\\\7aeff27b-733d-4eb9-bc67-42e155b7c762\\\\scratchpad\\\\story-test.png', [System.Drawing.Imaging.ImageFormat]::Png\\))",
+      "PowerShell(cd C:\\\\PROJECTS\\\\salika; $img = \"C:\\\\Users\\\\amir\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--PROJECTS-salika\\\\7aeff27b-733d-4eb9-bc67-42e155b7c762\\\\scratchpad\\\\story-test.png\"; $code = \"`$s = App\\\\Models\\\\Story::create\\(['title'=>'تینکر تست','badge'=>'جدید','sort_order'=>5,'is_active'=>true]\\); `$s->addMedia\\('$img'\\)->preservingOriginal\\(\\)->toMediaCollection\\('slides'\\); echo `$s->id.'|'.`$s->cover_url.'|'.implode\\(',', `$s->slide_urls\\);\"; $code | php artisan tinker 2>&1)",
+      "Bash(npm run *)",
+      "Bash(npm install *)",
+      "Bash(php artisan *)",
+      "Bash(php -l app/Http/Controllers/Admin/BannerController.php)",
+      "Bash(php -l app/Models/Banner.php)",
+      "Bash(php -l app/Http/Controllers/HomeController.php)"
+    ]
+  }
+}

@@ -1,0 +1,226 @@
+@import 'tailwindcss';
+@import 'swiper/css';
+@import 'swiper/css/navigation';
+@import 'swiper/css/pagination';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source "../**/*.blade.php";
+@source "../**/*.js";
+@source "../**/*.vue";
+
+@font-face {
+    font-family: 'YekanBakh';
+    src:
+        url('/static/fonts/YekanBakh/woff2/YekanBakh-Thin.woff2') format('woff2'),
+        url('/static/fonts/YekanBakh/woff/YekanBakh-Thin.woff') format('woff');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'YekanBakh';
+    src:
+        url('/static/fonts/YekanBakh/woff2/YekanBakh-Light.woff2') format('woff2'),
+        url('/static/fonts/YekanBakh/woff/YekanBakh-Light.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'YekanBakh';
+    src:
+        url('/static/fonts/YekanBakh/woff2/YekanBakh-Regular.woff2') format('woff2'),
+        url('/static/fonts/YekanBakh/woff/YekanBakh-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'YekanBakh';
+    src:
+        url('/static/fonts/YekanBakh/woff2/YekanBakh-SemiBold.woff2') format('woff2'),
+        url('/static/fonts/YekanBakh/woff/YekanBakh-SemiBold.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'YekanBakh';
+    src:
+        url('/static/fonts/YekanBakh/woff2/YekanBakh-SemiBold.woff2') format('woff2'),
+        url('/static/fonts/YekanBakh/woff/YekanBakh-SemiBold.woff') format('woff');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'YekanBakh';
+    src:
+        url('/static/fonts/YekanBakh/woff2/YekanBakh-Bold.woff2') format('woff2'),
+        url('/static/fonts/YekanBakh/woff/YekanBakh-Bold.woff') format('woff');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'YekanBakh';
+    src:
+        url('/static/fonts/YekanBakh/woff2/YekanBakh-ExtraBold.woff2') format('woff2'),
+        url('/static/fonts/YekanBakh/woff/YekanBakh-ExtraBold.woff') format('woff');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'YekanBakh';
+    src:
+        url('/static/fonts/YekanBakh/woff2/YekanBakh-Black.woff2') format('woff2'),
+        url('/static/fonts/YekanBakh/woff/YekanBakh-Black.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'YekanBakh';
+    src:
+        url('/static/fonts/YekanBakh/woff2/YekanBakh-ExtraBlack.woff2') format('woff2'),
+        url('/static/fonts/YekanBakh/woff/YekanBakh-ExtraBlack.woff') format('woff');
+    font-weight: 950;
+    font-style: normal;
+    font-display: swap;
+}
+
+@theme {
+    --font-sans: 'YekanBakh', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Brand palette extracted from the source site's dynamic theme CSS */
+    --color-brand-50: #fdeced;
+    --color-brand-100: #fbd6d9;
+    --color-brand-200: #f6adb3;
+    --color-brand-300: #f2848d;
+    --color-brand-400: #f25863;
+    --color-brand-500: #ee273a;
+    --color-brand-600: #d31d2f;
+    --color-brand-700: #a91726;
+    --color-brand-800: #7f111c;
+    --color-brand-900: #560b13;
+
+    --color-accent-50: #eafbf1;
+    --color-accent-100: #cdf5dd;
+    --color-accent-200: #9de9bf;
+    --color-accent-300: #6cdba0;
+    --color-accent-400: #49be78;
+    --color-accent-500: #38a866;
+    --color-accent-600: #2c8a53;
+    --color-accent-700: #226c41;
+
+    --color-ink-50: #f5f6f8;
+    --color-ink-100: #e7e8ec;
+    --color-ink-400: #6b6d78;
+    --color-ink-600: #3a3c46;
+    --color-ink-800: #1a1b23;
+    --color-ink-900: #0f002b;
+
+    --shadow-card: 0 2px 14px 0 rgba(15, 0, 43, 0.06);
+    --shadow-card-hover: 0 12px 28px 0 rgba(15, 0, 43, 0.12);
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        font-family: var(--font-sans);
+        color: var(--color-ink-800);
+        background-color: #f7f7f9;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+}
+
+.swiper {
+    --swiper-theme-color: var(--color-brand-500);
+    --swiper-pagination-bullet-inactive-color: var(--color-ink-100);
+    --swiper-pagination-bullet-inactive-opacity: 1;
+    --swiper-pagination-bullet-size: 7px;
+    --swiper-pagination-bullet-horizontal-gap: 4px;
+}
+
+.swiper-slide {
+    height: auto;
+}
+
+@layer utilities {
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .snap-x-mandatory {
+        scroll-snap-type: x mandatory;
+    }
+
+    .snap-start {
+        scroll-snap-align: start;
+    }
+}
+
+/* ─── Admin panel design system ──────────────────────────────────────────── */
+@layer components {
+    .admin-card {
+        @apply rounded-2xl border border-gray-100 bg-white;
+    }
+
+    .admin-input {
+        @apply w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-700 placeholder-gray-400 transition-colors focus:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-50;
+    }
+
+    .admin-select {
+        @apply w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-700 transition-colors focus:border-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-50;
+    }
+
+    .admin-label {
+        @apply mb-1.5 block text-sm font-medium text-gray-700;
+    }
+
+    .admin-btn-primary {
+        @apply inline-flex items-center justify-center gap-1.5 rounded-xl border border-transparent bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-indigo-100 transition-colors hover:bg-indigo-700;
+    }
+
+    .admin-btn-secondary {
+        @apply inline-flex items-center justify-center gap-1.5 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:border-gray-300 hover:bg-gray-50;
+    }
+
+    .admin-btn-danger {
+        @apply inline-flex items-center justify-center gap-1.5 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-rose-600 transition-colors hover:border-rose-300 hover:bg-rose-50;
+    }
+
+    .admin-th {
+        @apply px-5 py-3 text-right text-xs font-semibold text-gray-500;
+    }
+
+    .admin-td {
+        @apply px-5 py-3.5 text-sm text-gray-700;
+    }
+
+    .jdp-container {
+        z-index: 50;
+    }
+}
