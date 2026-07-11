@@ -329,6 +329,24 @@ detect_app_dir() {
 
 # ─── Laravel application setup ────────────────────────────────────────────────
 
+# PHP-FPM runs as www-data; artisan runs as APP_USER. Both must write here.
+fix_storage_permissions() {
+    local base="${1:-${APP_DIR}}"
+
+    mkdir -p \
+        "${base}/storage/framework/cache/data" \
+        "${base}/storage/framework/sessions" \
+        "${base}/storage/framework/testing" \
+        "${base}/storage/framework/views" \
+        "${base}/storage/logs" \
+        "${base}/storage/app/public" \
+        "${base}/bootstrap/cache"
+
+    chown -R "${APP_USER}:${APP_GROUP}" "${base}/storage" "${base}/bootstrap/cache"
+    chmod -R ug+rwx "${base}/storage" "${base}/bootstrap/cache"
+    find "${base}/storage" "${base}/bootstrap/cache" -type d -exec chmod g+s {} \;
+}
+
 deploy_app() {
     if [[ ! -f "${APP_DIR}/artisan" ]]; then
         warn "Skipping Laravel deploy — artisan not found."
@@ -404,8 +422,7 @@ deploy_app() {
     sudo -u "$APP_USER" bash -c "cd '${APP_DIR}' && php artisan view:cache"
     sudo -u "$APP_USER" bash -c "cd '${APP_DIR}' && php artisan event:cache"
 
-    chown -R "${APP_USER}:${APP_GROUP}" "${APP_DIR}/storage" "${APP_DIR}/bootstrap/cache"
-    chmod -R 775 "${APP_DIR}/storage" "${APP_DIR}/bootstrap/cache"
+    fix_storage_permissions
 }
 
 # ─── Nginx ────────────────────────────────────────────────────────────────────

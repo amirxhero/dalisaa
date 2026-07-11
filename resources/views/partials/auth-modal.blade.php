@@ -27,7 +27,7 @@
             <x-icon name="close" class="h-4 w-4" />
         </button>
 
-        <img src="https://kaveh.moeinwp.com/1/wp-content/uploads/2022/10/demo1.svg" alt="فروشگاه سالیکا" class="mx-auto mb-4 h-9 w-auto">
+        <x-logo class="mx-auto mb-4 h-9 w-auto" />
 
         <div class="mb-6 flex items-center justify-center gap-6 border-b border-ink-100">
             <button type="button" @click="mode = 'login'" :class="mode === 'login' ? 'border-brand-500 text-brand-500' : 'border-transparent text-ink-400'" class="border-b-2 pb-3 text-sm font-medium transition-colors">ورود</button>

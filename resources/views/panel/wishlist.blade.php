@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'علاقه‌مندی‌های من – فروشگاه سالیکا')
+@section('title', 'علاقه‌مندی‌های من')
 
 @section('content')
     <x-panel-page active="wishlist" title="علاقه‌مندی‌های من">

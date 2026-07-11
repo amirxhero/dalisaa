@@ -341,7 +341,7 @@ return [
             'mode' => env('ZARINPAL_MODE', 'sandbox'), // can be normal, sandbox, zaringate
             'merchantId' => env('ZARINPAL_MERCHANT_ID', '00000000-0000-0000-0000-000000000000'),
             'callbackUrl' => 'http://yoursite.com/path/to',
-            'description' => 'پرداخت خرید از فروشگاه سالیکا',
+            'description' => 'پرداخت خرید از فروشگاه دالیسا',
             'currency' => 'T', //Can be R, T (Rial, Toman)
         ],
         'zibal' => [

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'وضعیت سفارش '.$order->order_number.' – فروشگاه سالیکا')
+@section('title', 'وضعیت سفارش '.$order->order_number)
 
 @section('content')
     @php

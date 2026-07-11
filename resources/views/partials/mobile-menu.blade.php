@@ -23,7 +23,7 @@
         class="absolute inset-y-0 right-0 flex w-[85%] max-w-sm flex-col bg-white shadow-2xl"
     >
         <div class="flex items-center justify-between border-b border-ink-100 px-4 py-4">
-            <img src="https://kaveh.moeinwp.com/1/wp-content/uploads/2022/10/demo1.svg" alt="قالب کاوه" class="h-8 w-auto">
+            <x-logo class="h-8 w-auto" />
             <button type="button" @click="mobileMenuOpen = false" class="flex h-9 w-9 items-center justify-center rounded-full bg-ink-50 text-ink-600">
                 <x-icon name="close" class="h-4.5 w-4.5" />
             </button>

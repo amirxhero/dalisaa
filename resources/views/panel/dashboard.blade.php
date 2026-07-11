@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'داشبورد کاربری – فروشگاه سالیکا')
+@section('title', 'داشبورد کاربری')
 
 @section('content')
     <x-panel-page active="dashboard" title="داشبورد کاربری">

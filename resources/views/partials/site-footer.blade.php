@@ -3,7 +3,7 @@
     <div class="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-5 sm:grid-cols-2 lg:grid-cols-4 lg:px-6">
 
         <div>
-            <img src="https://kaveh.moeinwp.com/1/wp-content/uploads/2022/10/demo1.svg" alt="قالب کاوه" class="mb-4 h-9 w-auto brightness-0 invert">
+            <x-logo class="mb-4 h-9 w-auto rounded-lg bg-white px-2 py-1" />
             <h3 class="mb-2 text-sm font-bold text-white">فروشگاه اینترنتی</h3>
             <p class="text-xs leading-6 text-white/50">
                 فعالیت خود را از سال ۱۳۹۸ در زمینه فروش کیف پول‌های سخت‌افزاری شروع نموده و کالاهای خود را بدون واسطه و از طریق شرکت‌های اصلی سازنده تامین می‌کند و ضمانت اصالت و سلامت کالا را به تمام مشتریان ارائه می‌دهد.
@@ -31,10 +31,10 @@
             <h3 class="relative mb-4 pb-3 text-sm font-bold text-white after:absolute after:bottom-0 after:right-0 after:h-0.5 after:w-8 after:bg-brand-500">دسترسی سریع</h3>
             <ul class="space-y-3 text-xs text-white/60">
                 <li><a href="#" class="transition-colors hover:text-brand-400">دوره های آموزشی</a></li>
-                <li><a href="#" class="transition-colors hover:text-brand-400">اتاق خبر کاوه</a></li>
-                <li><a href="#" class="transition-colors hover:text-brand-400">فروش در کاوه</a></li>
+                <li><a href="#" class="transition-colors hover:text-brand-400">اتاق خبر دالیسا</a></li>
+                <li><a href="#" class="transition-colors hover:text-brand-400">فروش در دالیسا</a></li>
                 <li><a href="#" class="transition-colors hover:text-brand-400">فرصت‌های شغلی</a></li>
-                <li><a href="#" class="transition-colors hover:text-brand-400">تماس با کاوه</a></li>
+                <li><a href="{{ route('contact') }}" class="transition-colors hover:text-brand-400">تماس با دالیسا</a></li>
             </ul>
         </div>
 
@@ -74,6 +74,6 @@
     </div>
 
     <div class="mx-auto mt-10 max-w-7xl border-t border-white/10 px-5 pt-6 text-center text-[11px] text-white/40 lg:px-6">
-        کلیه حقوق این سایت متعلق به شرکت <span class="font-bold text-white/70">قالب کاوه</span> می‌باشد
+        کلیه حقوق این سایت متعلق به <span class="font-bold text-white/70">دالیسا</span> می‌باشد
     </div>
 </footer>

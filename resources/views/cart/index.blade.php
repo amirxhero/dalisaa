@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'سبد خرید – فروشگاه سالیکا')
+@section('title', 'سبد خرید')
 
 @section('content')
     <div class="bg-white py-8 sm:py-10">

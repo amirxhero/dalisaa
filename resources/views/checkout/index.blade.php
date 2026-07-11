@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'تسویه‌حساب – فروشگاه سالیکا')
+@section('title', 'تسویه‌حساب')
 
 @section('content')
     <div

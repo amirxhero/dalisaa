@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', ($address->exists ? 'ویرایش آدرس' : 'افزودن آدرس جدید').' – فروشگاه سالیکا')
+@section('title', $address->exists ? 'ویرایش آدرس' : 'افزودن آدرس جدید')
 
 @section('content')
     <x-panel-page active="addresses" :title="$address->exists ? 'ویرایش آدرس' : 'افزودن آدرس جدید'">

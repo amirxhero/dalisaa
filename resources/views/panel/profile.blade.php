@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'اطلاعات حساب کاربری – فروشگاه سالیکا')
+@section('title', 'اطلاعات حساب کاربری')
 
 @section('content')
     <x-panel-page active="profile" title="اطلاعات حساب کاربری">

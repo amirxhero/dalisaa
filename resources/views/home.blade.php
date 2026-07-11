@@ -1,7 +1,5 @@
 @extends('layouts.app')
 
-@section('title', 'دمو دیجیتال – قالب فروشگاهی کاوه')
-
 @section('content')
     <div class="pb-24 lg:pb-0">
         @include('home.stories')

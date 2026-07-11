@@ -3,8 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'دمو دیجیتال – قالب فروشگاهی کاوه')</title>
-    <meta name="description" content="فروشگاه اینترنتی کاوه؛ خرید آنلاین گوشی موبایل، تبلت، ساعت هوشمند و هدفون با تضمین اصالت و ارسال سریع.">
+    @php
+        $pageTitle = trim($__env->yieldContent('title'));
+        $siteTitle = config('seo.title');
+        $siteBrand = config('seo.brand');
+        $metaDescription = trim($__env->yieldContent('meta_description')) ?: config('seo.description');
+        $documentTitle = $pageTitle !== '' ? "{$pageTitle} – {$siteBrand}" : $siteTitle;
+    @endphp
+    <title>{{ $documentTitle }}</title>
+    <meta name="description" content="{{ $metaDescription }}">
+    <meta name="keywords" content="{{ config('seo.keywords') }}">
+    <meta name="author" content="{{ $siteBrand }}">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ url()->current() }}">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="fa_IR">
+    <meta property="og:site_name" content="{{ $siteBrand }}">
+    <meta property="og:title" content="{{ $documentTitle }}">
+    <meta property="og:description" content="{{ $metaDescription }}">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ $documentTitle }}">
+    <meta name="twitter:description" content="{{ $metaDescription }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])

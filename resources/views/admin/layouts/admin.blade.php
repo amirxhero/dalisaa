@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'پنل مدیریت') — سالیکا</title>
+    <title>@yield('title', 'پنل مدیریت') — {{ config('seo.brand') }}</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js" defer></script>
@@ -75,11 +75,10 @@
 >
     {{-- Logo --}}
     <div class="flex h-16 shrink-0 items-center gap-2.5 border-b border-gray-100 px-5">
-        <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-sm font-bold text-white">س</div>
-        <div class="min-w-0 flex-1">
-            <p class="truncate text-sm font-bold text-gray-900">سالیکا</p>
-            <p class="text-[11px] text-gray-400">پنل مدیریت</p>
-        </div>
+        <a href="{{ route('admin.dashboard') }}" class="min-w-0 flex-1">
+            <x-logo class="h-9 w-auto max-w-full" />
+            <p class="mt-0.5 text-[11px] text-gray-400">پنل مدیریت</p>
+        </a>
     </div>
 
     {{-- Nav --}}
