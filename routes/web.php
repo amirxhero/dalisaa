@@ -79,6 +79,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('banners/{banner}/toggle-active', [Admin\BannerController::class, 'toggleActive'])->name('banners.toggle-active');
 
     Route::resource('categories', Admin\CategoryController::class)->except(['show']);
+    Route::resource('brands', Admin\BrandController::class)->except(['show']);
+    Route::post('brands/{brand}/toggle-active', [Admin\BrandController::class, 'toggleActive'])->name('brands.toggle-active');
 
     Route::get('users', [Admin\UserController::class, 'index'])->name('users.index');
     Route::patch('users/{user}/toggle-admin', [Admin\UserController::class, 'toggleAdmin'])->name('users.toggle-admin');

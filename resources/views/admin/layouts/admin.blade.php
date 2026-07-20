@@ -23,6 +23,7 @@
             'label' => 'فروشگاه',
             'items' => [
                 ['route' => 'admin.categories.index',        'label' => 'دسته‌بندی‌ها',        'icon' => 'tabler:folder'],
+                ['route' => 'admin.brands.index',            'label' => 'برندها',              'icon' => 'tabler:award'],
                 ['route' => 'admin.products.index',          'label' => 'محصولات',              'icon' => 'tabler:box'],
                 ['route' => 'admin.special-products.index',  'label' => 'محصولات شگفت‌انگیز',  'icon' => 'tabler:bolt'],
                 ['route' => 'admin.stories.index',           'label' => 'استوری‌ها',            'icon' => 'tabler:photo'],

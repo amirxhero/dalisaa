@@ -76,7 +76,7 @@
                                 @if($product->name_en)
                                     <p class="truncate text-xs font-mono text-gray-500" dir="ltr">{{ $product->name_en }}</p>
                                 @endif
-                                <p class="text-xs text-gray-400">{{ $product->brand }} · {{ $product->sku }} · <span class="font-mono text-[11px]">{{ $product->slug }}</span></p>
+                                <p class="text-xs text-gray-400">{{ $product->brand?->title ?? $product->brand_name }} · {{ $product->sku }} · <span class="font-mono text-[11px]">{{ $product->slug }}</span></p>
                             </div>
                         </div>
                     </td>

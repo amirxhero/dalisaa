@@ -69,7 +69,15 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="admin-label">برند *</label>
-                            <input type="text" name="brand" value="{{ old('brand', $product->brand) }}" required class="admin-input">
+                            <select name="brand_id" required class="admin-select">
+                                <option value="">انتخاب برند...</option>
+                                @foreach($brands as $b)
+                                <option value="{{ $b->id }}" {{ old('brand_id', $product->brand_id) == $b->id ? 'selected' : '' }}>
+                                    {{ $b->title }} @if($b->title_en) ({{ $b->title_en }}) @endif
+                                </option>
+                                @endforeach
+                            </select>
+                            @error('brand_id') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
                         </div>
                         <div>
                             <label class="admin-label">کد SKU (سیستمی)</label>

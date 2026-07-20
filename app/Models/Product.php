@@ -16,6 +16,7 @@ class Product extends Model implements HasMedia
 
     protected $fillable = [
         'category_id',
+        'brand_id',
         'brand',
         'title',
         'name_en',
@@ -76,6 +77,16 @@ class Product extends Model implements HasMedia
             ->width(500)
             ->height(500)
             ->nonQueued();
+    }
+
+    public function brand(): BelongsTo
+    {
+        return $this->belongsTo(Brand::class);
+    }
+
+    public function getBrandNameAttribute(): string
+    {
+        return $this->brand?->title ?? (is_string($this->attributes['brand'] ?? null) ? $this->attributes['brand'] : '—');
     }
 
     public function category(): BelongsTo

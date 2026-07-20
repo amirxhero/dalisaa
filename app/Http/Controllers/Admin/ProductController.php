@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Services\CurrencyService;
@@ -13,13 +14,17 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with('category')->latest();
+        $query = Product::with(['category', 'brand'])->latest();
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
                   ->orWhere('sku', 'like', "%{$search}%")
-                  ->orWhere('brand', 'like', "%{$search}%");
+                  ->orWhere('brand', 'like', "%{$search}%")
+                  ->orWhereHas('brand', function ($bq) use ($search) {
+                      $bq->where('title', 'like', "%{$search}%")
+                         ->orWhere('title_en', 'like', "%{$search}%");
+                  });
             });
         }
 
@@ -40,10 +45,11 @@ class ProductController extends Controller
     public function create()
     {
         $categories = Category::getTree();
+        $brands     = Brand::where('is_active', true)->orderBy('title')->get();
         $currencies = CurrencyService::currencies();
         $rates      = CurrencyService::allRates();
 
-        return view('admin.products.create', compact('categories', 'currencies', 'rates'));
+        return view('admin.products.create', compact('categories', 'brands', 'currencies', 'rates'));
     }
 
     public function store(Request $request)
@@ -52,7 +58,7 @@ class ProductController extends Controller
             'title'          => 'required|string|max:255',
             'name_en'        => 'nullable|string|max:255',
             'slug'           => 'nullable|string|max:255|unique:products,slug',
-            'brand'          => 'required|string|max:100',
+            'brand_id'       => 'required|exists:brands,id',
             'category_id'    => 'required|exists:categories,id',
             'description'    => 'required|string',
             'sku'            => 'nullable|string|max:50|unique:products,sku',
@@ -169,10 +175,11 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $categories = Category::getTree();
+        $brands     = Brand::orderBy('title')->get();
         $currencies = CurrencyService::currencies();
         $rates      = CurrencyService::allRates();
 
-        return view('admin.products.edit', compact('product', 'categories', 'currencies', 'rates'));
+        return view('admin.products.edit', compact('product', 'categories', 'brands', 'currencies', 'rates'));
     }
 
     public function update(Request $request, Product $product)
@@ -181,7 +188,7 @@ class ProductController extends Controller
             'title'          => 'required|string|max:255',
             'name_en'        => 'nullable|string|max:255',
             'slug'           => 'nullable|string|max:255|unique:products,slug,'.$product->id,
-            'brand'          => 'required|string|max:100',
+            'brand_id'       => 'required|exists:brands,id',
             'category_id'    => 'required|exists:categories,id',
             'description'    => 'required|string',
             'sku'            => 'nullable|string|max:50|unique:products,sku,'.$product->id,
