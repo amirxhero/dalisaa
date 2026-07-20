@@ -106,6 +106,13 @@
                                class="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:border-indigo-300 hover:text-indigo-600">
                                 <iconify-icon icon="tabler:pencil" class="text-sm"></iconify-icon>
                             </a>
+                            <form action="{{ route('admin.products.duplicate', $product) }}" method="POST">
+                                @csrf
+                                <button type="submit" title="کپی / تکثیر محصول"
+                                        class="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-amber-600 transition-colors hover:border-amber-300 hover:bg-amber-50">
+                                    <iconify-icon icon="tabler:copy" class="text-sm"></iconify-icon>
+                                </button>
+                            </form>
                             <form action="{{ route('admin.products.destroy', $product) }}" method="POST"
                                   onsubmit="return confirm('آیا مطمئن هستید؟ این عمل غیرقابل بازگشت است.')">
                                 @csrf @method('DELETE')

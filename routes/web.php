@@ -65,6 +65,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/', [Admin\DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('products', Admin\ProductController::class);
+    Route::post('products/{product}/duplicate', [Admin\ProductController::class, 'duplicate'])->name('products.duplicate');
     Route::post('products/{product}/toggle-active', [Admin\ProductController::class, 'toggleActive'])->name('products.toggle-active');
 
     Route::get('special-products', [Admin\SpecialProductController::class, 'index'])->name('special-products.index');

@@ -194,9 +194,17 @@
                     <iconify-icon icon="tabler:device-floppy" class="text-base"></iconify-icon>
                     ذخیره تغییرات
                 </button>
+                <button type="submit" form="duplicate-form" class="admin-btn-secondary py-3 flex items-center justify-center gap-1.5 border-amber-200 bg-amber-50/70 text-amber-700 hover:bg-amber-100">
+                    <iconify-icon icon="tabler:copy" class="text-base"></iconify-icon>
+                    کپی از این محصول
+                </button>
                 <a href="{{ route('admin.products.index') }}" class="admin-btn-secondary py-3">انصراف</a>
             </div>
         </div>
     </div>
+</form>
+
+<form id="duplicate-form" action="{{ route('admin.products.duplicate', $product) }}" method="POST" class="hidden">
+    @csrf
 </form>
 @endsection

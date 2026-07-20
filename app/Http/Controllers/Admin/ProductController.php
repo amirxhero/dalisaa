@@ -313,6 +313,44 @@ class ProductController extends Controller
         return back()->with('success', 'محصول حذف شد.');
     }
 
+    public function duplicate(Product $product)
+    {
+        $newProduct = $product->replicate([
+            'slug',
+            'sku',
+            'rating_cache',
+            'reviews_count_cache',
+        ]);
+
+        $newProduct->title = $product->title . ' (کپی)';
+        if ($product->name_en) {
+            $newProduct->name_en = $product->name_en . ' (Copy)';
+        }
+
+        $newProduct->slug = $this->generateSlug([
+            'title'   => $newProduct->title,
+            'name_en' => $newProduct->name_en,
+            'slug'    => null,
+        ]);
+
+        $newProduct->sku = $this->generateSku();
+        $newProduct->is_active = false;
+        $newProduct->save();
+
+        foreach ($product->variants as $variant) {
+            $newVariant = $variant->replicate(['product_id']);
+            $newVariant->product_id = $newProduct->id;
+            $newVariant->save();
+        }
+
+        foreach ($product->getMedia('gallery') as $mediaItem) {
+            $mediaItem->copy($newProduct, 'gallery');
+        }
+
+        return redirect()->route('admin.products.edit', $newProduct)
+            ->with('success', 'محصول با موفقیت کپی شد. اکنون می‌توانید مشخصات آن را ویرایش کنید.');
+    }
+
     public function toggleActive(Product $product)
     {
         $product->update(['is_active' => ! $product->is_active]);
