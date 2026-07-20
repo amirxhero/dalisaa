@@ -34,6 +34,8 @@ class Story extends Model implements HasMedia
     public function registerMediaConversions(?Media $media = null): void
     {
         $this->addMediaConversion('thumb')
+            ->format('webp')
+            ->quality(85)
             ->width(160)
             ->height(160)
             ->nonQueued();

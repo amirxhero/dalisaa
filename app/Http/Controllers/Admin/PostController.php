@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Post;
+use App\Services\WebpImageService;
 use App\Support\JalaliDate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -43,7 +44,7 @@ class PostController extends Controller
         $post = Post::create($data);
 
         if ($request->hasFile('cover')) {
-            $post->addMediaFromRequest('cover')->toMediaCollection('cover');
+            app(WebpImageService::class)->addToMediaCollection($post, $request->file('cover'), 'cover');
         }
 
         return redirect()->route('admin.posts.index')
@@ -81,7 +82,7 @@ class PostController extends Controller
 
         if ($request->hasFile('cover')) {
             $post->clearMediaCollection('cover');
-            $post->addMediaFromRequest('cover')->toMediaCollection('cover');
+            app(WebpImageService::class)->addToMediaCollection($post, $request->file('cover'), 'cover');
         }
 
         return redirect()->route('admin.posts.index')

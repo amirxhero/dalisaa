@@ -74,6 +74,8 @@ class Product extends Model implements HasMedia
     public function registerMediaConversions(?Media $media = null): void
     {
         $this->addMediaConversion('thumb')
+            ->format('webp')
+            ->quality(85)
             ->width(500)
             ->height(500)
             ->nonQueued();

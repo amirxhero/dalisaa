@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\WebpImageService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class PostImageController extends Controller
 {
@@ -12,8 +12,8 @@ class PostImageController extends Controller
     {
         $request->validate(['image' => 'required|image|max:5120']);
 
-        $path = $request->file('image')->store('blog-images', 'public');
+        $path = app(WebpImageService::class)->storePublic($request->file('image'), 'blog-images');
 
-        return response()->json(['url' => Storage::url($path)]);
+        return response()->json(['url' => asset('storage/'.$path)]);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
+use App\Services\WebpImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -48,7 +49,7 @@ class BrandController extends Controller
         $brand = Brand::create($data);
 
         if ($request->hasFile('image')) {
-            $brand->addMediaFromRequest('image')->toMediaCollection('image');
+            app(WebpImageService::class)->addToMediaCollection($brand, $request->file('image'), 'image');
         }
 
         return redirect()->route('admin.brands.index')
@@ -78,7 +79,7 @@ class BrandController extends Controller
 
         if ($request->hasFile('image')) {
             $brand->clearMediaCollection('image');
-            $brand->addMediaFromRequest('image')->toMediaCollection('image');
+            app(WebpImageService::class)->addToMediaCollection($brand, $request->file('image'), 'image');
         }
 
         return redirect()->route('admin.brands.index')

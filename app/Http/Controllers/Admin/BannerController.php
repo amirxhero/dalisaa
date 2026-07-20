@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
+use App\Services\WebpImageService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -102,12 +103,12 @@ class BannerController extends Controller
     {
         if ($request->hasFile('desktop_image')) {
             $banner->clearMediaCollection('desktop');
-            $banner->addMediaFromRequest('desktop_image')->toMediaCollection('desktop');
+            app(WebpImageService::class)->addToMediaCollection($banner, $request->file('desktop_image'), 'desktop');
         }
 
         if ($request->hasFile('mobile_image')) {
             $banner->clearMediaCollection('mobile');
-            $banner->addMediaFromRequest('mobile_image')->toMediaCollection('mobile');
+            app(WebpImageService::class)->addToMediaCollection($banner, $request->file('mobile_image'), 'mobile');
         }
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Story;
+use App\Services\WebpImageService;
 use Illuminate\Http\Request;
 
 class StoryController extends Controller
@@ -29,7 +30,7 @@ class StoryController extends Controller
         $story = Story::create($data);
 
         foreach ($request->file('images', []) as $image) {
-            $story->addMedia($image)->toMediaCollection('slides');
+            app(WebpImageService::class)->addToMediaCollection($story, $image, 'slides');
         }
 
         return redirect()->route('admin.stories.index')
@@ -52,7 +53,7 @@ class StoryController extends Controller
         if ($request->hasFile('images')) {
             $story->clearMediaCollection('slides');
             foreach ($request->file('images') as $image) {
-                $story->addMedia($image)->toMediaCollection('slides');
+                app(WebpImageService::class)->addToMediaCollection($story, $image, 'slides');
             }
         }
 

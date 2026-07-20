@@ -7,6 +7,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use App\Services\CurrencyService;
+use App\Services\WebpImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -159,7 +160,7 @@ class ProductController extends Controller
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
-                $product->addMedia($image)->toMediaCollection('gallery');
+                app(WebpImageService::class)->addToMediaCollection($product, $image, 'gallery');
             }
         }
 
@@ -304,7 +305,7 @@ class ProductController extends Controller
         if ($request->hasFile('images')) {
             $product->clearMediaCollection('gallery');
             foreach ($request->file('images') as $image) {
-                $product->addMedia($image)->toMediaCollection('gallery');
+                app(WebpImageService::class)->addToMediaCollection($product, $image, 'gallery');
             }
         }
 
