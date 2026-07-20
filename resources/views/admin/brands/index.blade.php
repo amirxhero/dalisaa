@@ -34,74 +34,54 @@
     @endif
 </form>
 
-<x-admin.section>
+<x-admin.section :padded="true">
     @if($brands->isEmpty())
         <x-admin.empty-state icon="tabler:award-off" title="برندی یافت نشد" description="برند جدیدی ایجاد کنید یا عبارت جستجو را تغییر دهید." />
     @else
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead>
-                <tr class="border-b border-gray-100 bg-gray-50/60">
-                    <th class="admin-th">لوگو / تصویر</th>
-                    <th class="admin-th">عنوان برند</th>
-                    <th class="admin-th">نام انگلیسی</th>
-                    <th class="admin-th">اسلاگ</th>
-                    <th class="admin-th">محصولات مرتبط</th>
-                    <th class="admin-th">وضعیت</th>
-                    <th class="admin-th">عملیات</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-50">
-                @foreach($brands as $brand)
-                <tr class="transition-colors hover:bg-gray-50/60 {{ !$brand->is_active ? 'opacity-60' : '' }}">
-                    <td class="admin-td">
+    <div class="admin-index-grid">
+        @foreach($brands as $brand)
+        <article class="admin-list-card {{ !$brand->is_active ? 'bg-gray-50/70' : '' }}">
+            <div class="admin-list-card-head">
+                <div class="flex min-w-0 items-center gap-3">
+                    <div class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-gray-100 bg-white p-1.5">
                         @if($brand->image_url)
-                            <img src="{{ $brand->image_thumb }}" alt="{{ $brand->title }}" class="h-10 w-10 rounded-xl bg-gray-100 object-contain p-1 border border-gray-100">
+                            <img src="{{ $brand->image_thumb }}" alt="{{ $brand->title }}" loading="lazy" class="h-full w-full object-contain">
                         @else
-                            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 text-gray-400 font-bold text-xs">
-                                {{ mb_substr($brand->title, 0, 1) }}
-                            </div>
+                            <span class="text-sm font-black text-indigo-500">{{ mb_substr($brand->title, 0, 1) }}</span>
                         @endif
-                    </td>
-                    <td class="admin-td font-semibold text-gray-900">
-                        {{ $brand->title }}
-                    </td>
-                    <td class="admin-td text-gray-500 font-mono text-xs" dir="ltr">{{ $brand->title_en ?? '—' }}</td>
-                    <td class="admin-td text-gray-500 font-mono text-xs" dir="ltr">{{ $brand->slug }}</td>
-                    <td class="admin-td">
-                        <x-admin.badge tone="indigo">{{ $brand->products_count }} محصول</x-admin.badge>
-                    </td>
-                    <td class="admin-td">
-                        <form action="{{ route('admin.brands.toggle-active', $brand) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="rounded-full px-2.5 py-1 text-xs font-medium transition-colors
-                                {{ $brand->is_active ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}">
-                                {{ $brand->is_active ? 'فعال' : 'غیرفعال' }}
-                            </button>
-                        </form>
-                    </td>
-                    <td class="admin-td">
-                        <div class="flex items-center gap-1.5">
-                            <a href="{{ route('admin.brands.edit', $brand) }}" title="ویرایش"
-                               class="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:border-indigo-300 hover:text-indigo-600">
-                                <iconify-icon icon="tabler:pencil" class="text-sm"></iconify-icon>
-                            </a>
-                            <form action="{{ route('admin.brands.destroy', $brand) }}" method="POST" onsubmit="return confirm('آیا از حذف این برند مطمئن هستید؟')">
-                                @csrf @method('DELETE')
-                                <button type="submit" title="حذف"
-                                        class="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-rose-500 transition-colors hover:border-rose-300 hover:bg-rose-50">
-                                    <iconify-icon icon="tabler:trash" class="text-sm"></iconify-icon>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+                    </div>
+                    <div class="min-w-0">
+                        <h3 class="truncate text-sm font-bold text-gray-900">{{ $brand->title }}</h3>
+                        <p class="truncate font-mono text-[10px] text-gray-400" dir="ltr">{{ $brand->title_en ?? $brand->slug }}</p>
+                    </div>
+                </div>
+                <form action="{{ route('admin.brands.toggle-active', $brand) }}" method="POST">
+                    @csrf
+                    <button type="submit"><x-admin.badge :tone="$brand->is_active ? 'emerald' : 'gray'">{{ $brand->is_active ? 'فعال' : 'غیرفعال' }}</x-admin.badge></button>
+                </form>
+            </div>
+            <div class="admin-list-card-body">
+                <div class="admin-meta-grid">
+                    <div><span class="admin-meta-label">نام انگلیسی</span><span class="admin-meta-value font-mono" dir="ltr">{{ $brand->title_en ?? '—' }}</span></div>
+                    <div><span class="admin-meta-label">محصولات مرتبط</span><x-admin.badge tone="indigo">{{ $brand->products_count }} محصول</x-admin.badge></div>
+                    <div class="col-span-2"><span class="admin-meta-label">اسلاگ</span><span class="admin-meta-value font-mono" dir="ltr">{{ $brand->slug }}</span></div>
+                </div>
+            </div>
+            <div class="admin-list-card-footer">
+                <span class="text-[10px] text-gray-400">مدیریت برند</span>
+                <div class="flex items-center gap-1.5">
+                    <a href="{{ route('admin.brands.edit', $brand) }}" title="ویرایش" class="admin-icon-btn"><iconify-icon icon="tabler:pencil" class="text-sm"></iconify-icon></a>
+                    <form action="{{ route('admin.brands.destroy', $brand) }}" method="POST" onsubmit="return confirm('آیا از حذف این برند مطمئن هستید؟')">
+                        @csrf @method('DELETE')
+                        <button type="submit" title="حذف" class="admin-icon-btn-danger"><iconify-icon icon="tabler:trash" class="text-sm"></iconify-icon></button>
+                    </form>
+                </div>
+            </div>
+        </article>
+        @endforeach
     </div>
     @if($brands->hasPages())
-    <div class="border-t border-gray-100 px-5 py-4">
+    <div class="mt-6 border-t border-gray-100 pt-4">
         {{ $brands->links('admin.partials.pagination') }}
     </div>
     @endif

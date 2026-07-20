@@ -212,6 +212,46 @@
         @apply inline-flex items-center justify-center gap-1.5 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-rose-600 transition-colors hover:border-rose-300 hover:bg-rose-50;
     }
 
+    .admin-index-grid {
+        @apply grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3;
+    }
+
+    .admin-list-card {
+        @apply flex min-w-0 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-[0_3px_14px_-8px_rgba(15,23,42,0.25)] transition duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-[0_14px_30px_-16px_rgba(79,70,229,0.28)];
+    }
+
+    .admin-list-card-head {
+        @apply flex min-h-12 items-center justify-between gap-3 border-b border-gray-100 bg-gray-50/60 px-4 py-2.5;
+    }
+
+    .admin-list-card-body {
+        @apply flex-1 p-4;
+    }
+
+    .admin-list-card-footer {
+        @apply flex items-center justify-between gap-3 border-t border-gray-100 px-4 py-3;
+    }
+
+    .admin-meta-grid {
+        @apply grid grid-cols-2 gap-x-4 gap-y-3;
+    }
+
+    .admin-meta-label {
+        @apply mb-0.5 block text-[10px] font-semibold text-gray-400;
+    }
+
+    .admin-meta-value {
+        @apply block truncate text-xs font-medium text-gray-700;
+    }
+
+    .admin-icon-btn {
+        @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 transition-colors hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600;
+    }
+
+    .admin-icon-btn-danger {
+        @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-rose-500 transition-colors hover:border-rose-300 hover:bg-rose-50;
+    }
+
     .admin-th {
         @apply px-5 py-3 text-right text-xs font-semibold text-gray-500;
     }

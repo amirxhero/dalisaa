@@ -14,67 +14,51 @@
         </a>
     </div>
 
-    <x-admin.section>
+    <x-admin.section :padded="true">
         @if($posts->isEmpty())
             <div class="py-16 text-center text-gray-400">
                 <iconify-icon icon="tabler:article-off" class="mb-3 text-5xl"></iconify-icon>
                 <p class="text-sm">هنوز مقاله‌ای ثبت نشده</p>
             </div>
         @else
-            <table class="w-full text-sm">
-                <thead class="border-b border-gray-100 text-xs text-gray-400">
-                    <tr>
-                        <th class="py-3 pr-5 text-right font-medium">عنوان</th>
-                        <th class="py-3 text-right font-medium">نویسنده</th>
-                        <th class="py-3 text-right font-medium">وضعیت</th>
-                        <th class="py-3 text-right font-medium">تاریخ</th>
-                        <th class="py-3 pl-5 text-left font-medium">عملیات</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-50">
-                    @foreach($posts as $post)
-                    <tr class="hover:bg-gray-50/50">
-                        <td class="py-3 pr-5">
-                            <div class="flex items-center gap-3">
+            <div class="admin-index-grid">
+                @foreach($posts as $post)
+                <article class="group admin-list-card">
+                    <div class="h-32 overflow-hidden bg-gray-100">
                                 @if($post->cover_url)
-                                    <img src="{{ $post->cover_url }}" alt="" class="h-10 w-16 rounded-lg object-cover">
+                            <img src="{{ $post->cover_url }}" alt="{{ $post->title }}" loading="lazy" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105">
                                 @else
-                                    <div class="flex h-10 w-16 items-center justify-center rounded-lg bg-gray-100 text-gray-300">
-                                        <iconify-icon icon="tabler:photo" class="text-lg"></iconify-icon>
-                                    </div>
+                            <div class="flex h-full items-center justify-center text-gray-300"><iconify-icon icon="tabler:article" class="text-4xl"></iconify-icon></div>
                                 @endif
-                                <div>
-                                    <p class="font-medium text-gray-900">{{ $post->title }}</p>
-                                    <p class="text-xs text-gray-400">/blog/{{ $post->slug }}</p>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="py-3 text-gray-600">{{ $post->user->name ?? '—' }}</td>
-                        <td class="py-3">
+                    </div>
+                    <div class="admin-list-card-body">
+                        <div class="mb-3 flex items-center justify-between gap-2">
                             @if($post->status === 'published')
-                                <span class="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">منتشر شده</span>
+                                <x-admin.badge tone="emerald">منتشر شده</x-admin.badge>
                             @else
-                                <span class="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-700">پیش‌نویس</span>
+                                <x-admin.badge tone="amber">پیش‌نویس</x-admin.badge>
                             @endif
-                        </td>
-                        <td class="py-3 text-xs text-gray-400">{{ $post->updated_at->diffForHumans() }}</td>
-                        <td class="py-3 pl-5">
-                            <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('admin.posts.edit', $post) }}"
-                                   class="rounded-lg px-3 py-1.5 text-xs font-medium text-indigo-600 hover:bg-indigo-50">ویرایش</a>
-                                <form method="POST" action="{{ route('admin.posts.destroy', $post) }}"
-                                      onsubmit="return confirm('حذف شود؟')">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="rounded-lg px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50">حذف</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                            <span class="text-[10px] text-gray-400">{{ $post->updated_at->diffForHumans() }}</span>
+                        </div>
+                        <h3 class="line-clamp-2 min-h-10 text-sm font-bold leading-5 text-gray-900">{{ $post->title }}</h3>
+                        <p class="mt-2 truncate font-mono text-[10px] text-gray-400" dir="ltr">/blog/{{ $post->slug }}</p>
+                        <p class="mt-3 text-xs text-gray-500">نویسنده: {{ $post->user->name ?? '—' }}</p>
+                    </div>
+                    <div class="admin-list-card-footer">
+                        <span class="text-[10px] text-gray-400">مدیریت مقاله</span>
+                        <div class="flex items-center gap-1.5">
+                            <a href="{{ route('admin.posts.edit', $post) }}" title="ویرایش" class="admin-icon-btn"><iconify-icon icon="tabler:pencil" class="text-sm"></iconify-icon></a>
+                            <form method="POST" action="{{ route('admin.posts.destroy', $post) }}" onsubmit="return confirm('حذف شود؟')">
+                                @csrf @method('DELETE')
+                                <button type="submit" title="حذف" class="admin-icon-btn-danger"><iconify-icon icon="tabler:trash" class="text-sm"></iconify-icon></button>
+                            </form>
+                        </div>
+                    </div>
+                </article>
+                @endforeach
+            </div>
             @if($posts->hasPages())
-                <div class="border-t border-gray-100 px-5 py-3">
+                <div class="mt-6 border-t border-gray-100 pt-4">
                     {{ $posts->links() }}
                 </div>
             @endif

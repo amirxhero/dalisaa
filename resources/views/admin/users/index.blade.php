@@ -31,83 +31,66 @@
     @endif
 </form>
 
-<x-admin.section>
+<x-admin.section :padded="true">
     @if($users->isEmpty())
         <x-admin.empty-state icon="tabler:users" title="کاربری یافت نشد" />
     @else
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead>
-                <tr class="border-b border-gray-100 bg-gray-50/60">
-                    <th class="admin-th">کاربر</th>
-                    <th class="admin-th">موبایل</th>
-                    <th class="admin-th">سفارشات</th>
-                    <th class="admin-th">تاریخ عضویت</th>
-                    <th class="admin-th">نقش</th>
-                    <th class="admin-th">وضعیت</th>
-                    <th class="admin-th">عملیات</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-50">
-                @foreach($users as $user)
-                @php $isMe = $user->id === auth()->id(); @endphp
-                <tr class="transition-colors hover:bg-gray-50/60 {{ $user->isBlocked() ? 'opacity-60' : '' }}">
-                    <td class="admin-td">
-                        <div class="flex items-center gap-3">
-                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-xs font-bold text-indigo-600">
-                                {{ mb_substr($user->name, 0, 1) }}
-                            </div>
-                            <div class="min-w-0">
-                                <p class="truncate font-medium text-gray-900">{{ $user->name }}</p>
-                                <p class="truncate text-xs text-gray-400">{{ $user->email ?? '—' }}</p>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="admin-td font-mono text-gray-600">{{ $user->mobile ?? '—' }}</td>
-                    <td class="admin-td"><x-admin.badge tone="gray">{{ $user->orders_count }}</x-admin.badge></td>
-                    <td class="admin-td text-xs text-gray-500">{{ $user->created_at->diffForHumans() }}</td>
-                    <td class="admin-td">
-                        <x-admin.badge :tone="$user->is_admin ? 'indigo' : 'gray'">{{ $user->is_admin ? 'مدیر' : 'مشتری' }}</x-admin.badge>
-                    </td>
-                    <td class="admin-td">
-                        <x-admin.badge :tone="$user->isBlocked() ? 'rose' : 'emerald'">{{ $user->isBlocked() ? 'مسدود' : 'فعال' }}</x-admin.badge>
-                    </td>
-                    <td class="admin-td">
+    <div class="admin-index-grid">
+        @foreach($users as $user)
+        @php $isMe = $user->id === auth()->id(); @endphp
+        <article class="admin-list-card {{ $user->isBlocked() ? 'bg-gray-50/70' : '' }}">
+            <div class="admin-list-card-head">
+                <div class="flex min-w-0 items-center gap-3">
+                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-sm font-black text-indigo-600">{{ mb_substr($user->name, 0, 1) }}</span>
+                    <div class="min-w-0"><h3 class="truncate text-sm font-bold text-gray-900">{{ $user->name }}</h3><p class="truncate text-[10px] text-gray-400">{{ $user->email ?? 'بدون ایمیل' }}</p></div>
+                </div>
+                <div class="flex gap-1.5">
+                    <x-admin.badge :tone="$user->is_admin ? 'indigo' : 'gray'">{{ $user->is_admin ? 'مدیر' : 'مشتری' }}</x-admin.badge>
+                    <x-admin.badge :tone="$user->isBlocked() ? 'rose' : 'emerald'">{{ $user->isBlocked() ? 'مسدود' : 'فعال' }}</x-admin.badge>
+                </div>
+            </div>
+            <div class="admin-list-card-body">
+                <div class="admin-meta-grid">
+                    <div><span class="admin-meta-label">شماره موبایل</span><span class="admin-meta-value font-mono">{{ $user->mobile ?? '—' }}</span></div>
+                    <div><span class="admin-meta-label">تعداد سفارش</span><x-admin.badge tone="gray">{{ $user->orders_count }} سفارش</x-admin.badge></div>
+                    <div class="col-span-2"><span class="admin-meta-label">تاریخ عضویت</span><span class="admin-meta-value">{{ $user->created_at->diffForHumans() }}</span></div>
+                </div>
+            </div>
+            <div class="admin-list-card-footer">
+                <span class="text-[10px] text-gray-400">{{ $isMe ? 'حساب کاربری شما' : 'مدیریت دسترسی' }}</span>
                         @if(!$isMe)
                         <div class="flex flex-wrap items-center gap-1.5">
                             <form action="{{ route('admin.users.toggle-admin', $user) }}" method="POST">
                                 @csrf @method('PATCH')
                                 <button type="submit" title="{{ $user->is_admin ? 'حذف از مدیران' : 'تبدیل به مدیر' }}"
-                                        class="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:border-indigo-300 hover:text-indigo-600">
+                                        class="admin-icon-btn">
                                     <iconify-icon icon="tabler:shield-check" class="text-sm"></iconify-icon>
                                 </button>
                             </form>
                             <form action="{{ route('admin.users.toggle-block', $user) }}" method="POST">
                                 @csrf @method('PATCH')
                                 <button type="submit" title="{{ $user->isBlocked() ? 'رفع مسدودی' : 'مسدود کردن' }}"
-                                        class="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 transition-colors {{ $user->isBlocked() ? 'text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50' : 'text-amber-600 hover:border-amber-300 hover:bg-amber-50' }}">
+                                        class="admin-icon-btn {{ $user->isBlocked() ? '!text-emerald-600 hover:!border-emerald-300 hover:!bg-emerald-50' : '!text-amber-600 hover:!border-amber-300 hover:!bg-amber-50' }}">
                                     <iconify-icon icon="{{ $user->isBlocked() ? 'tabler:lock-open' : 'tabler:lock' }}" class="text-sm"></iconify-icon>
                                 </button>
                             </form>
                             <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('آیا مطمئن هستید؟')">
                                 @csrf @method('DELETE')
                                 <button type="submit" title="حذف"
-                                        class="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-rose-500 transition-colors hover:border-rose-300 hover:bg-rose-50">
+                                        class="admin-icon-btn-danger">
                                     <iconify-icon icon="tabler:trash" class="text-sm"></iconify-icon>
                                 </button>
                             </form>
                         </div>
                         @else
-                        <span class="text-xs text-gray-400">شما</span>
+                        <x-admin.badge tone="indigo">شما</x-admin.badge>
                         @endif
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+            </div>
+        </article>
+        @endforeach
     </div>
     @if($users->hasPages())
-    <div class="border-t border-gray-100 px-5 py-4">
+    <div class="mt-6 border-t border-gray-100 pt-4">
         {{ $users->links('admin.partials.pagination') }}
     </div>
     @endif

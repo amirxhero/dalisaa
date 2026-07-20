@@ -43,58 +43,34 @@
     </button>
 </form>
 
-<x-admin.section>
+<x-admin.section :padded="true">
     @if($orders->isEmpty())
         <x-admin.empty-state icon="tabler:shopping-cart-off" title="سفارشی یافت نشد" />
     @else
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead>
-                <tr class="border-b border-gray-100 bg-gray-50/60">
-                    <th class="admin-th">شماره سفارش</th>
-                    <th class="admin-th">مشتری</th>
-                    <th class="admin-th">مبلغ</th>
-                    <th class="admin-th">کد تخفیف</th>
-                    <th class="admin-th">تاریخ</th>
-                    <th class="admin-th">وضعیت</th>
-                    <th class="admin-th"></th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-50">
-                @foreach($orders as $order)
-                <tr class="transition-colors hover:bg-gray-50/60">
-                    <td class="admin-td">
-                        <a href="{{ route('admin.orders.show', $order) }}" class="font-mono text-xs font-semibold text-indigo-600 hover:underline">{{ $order->order_number }}</a>
-                    </td>
-                    <td class="admin-td">
-                        <p class="font-medium text-gray-800">{{ $order->receiver_name }}</p>
-                        <p class="text-xs text-gray-400">{{ $order->receiver_mobile }}</p>
-                    </td>
-                    <td class="admin-td font-semibold text-gray-900">{{ number_format($order->total) }} ت</td>
-                    <td class="admin-td">
-                        @if($order->discount_code)
-                        <span class="rounded-lg bg-amber-50 px-2 py-0.5 font-mono text-xs font-semibold text-amber-700">{{ $order->discount_code }}</span>
-                        @else
-                        <span class="text-gray-300">—</span>
-                        @endif
-                    </td>
-                    <td class="admin-td text-xs text-gray-500">{{ $order->created_at->format('Y/m/d') }}</td>
-                    <td class="admin-td">
-                        <x-admin.badge :tone="$toneMap[$order->status] ?? 'gray'">{{ $statusLabels[$order->status] ?? $order->status }}</x-admin.badge>
-                    </td>
-                    <td class="admin-td">
-                        <a href="{{ route('admin.orders.show', $order) }}" title="جزئیات"
-                           class="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:border-indigo-300 hover:text-indigo-600">
-                            <iconify-icon icon="tabler:eye" class="text-sm"></iconify-icon>
-                        </a>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+    <div class="admin-index-grid">
+        @foreach($orders as $order)
+        <article class="admin-list-card">
+            <div class="admin-list-card-head">
+                <div><span class="text-[10px] text-gray-400">شماره سفارش</span><a href="{{ route('admin.orders.show', $order) }}" class="block font-mono text-xs font-bold text-indigo-700 hover:underline">{{ $order->order_number }}</a></div>
+                <x-admin.badge :tone="$toneMap[$order->status] ?? 'gray'">{{ $statusLabels[$order->status] ?? $order->status }}</x-admin.badge>
+            </div>
+            <div class="admin-list-card-body">
+                <div class="mb-4 flex items-center gap-3"><span class="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50 text-sm font-black text-indigo-600">{{ mb_substr($order->receiver_name, 0, 1) }}</span><div class="min-w-0"><p class="truncate text-sm font-bold text-gray-900">{{ $order->receiver_name }}</p><p class="font-mono text-[10px] text-gray-400">{{ $order->receiver_mobile }}</p></div></div>
+                <div class="admin-meta-grid">
+                    <div><span class="admin-meta-label">مبلغ سفارش</span><span class="admin-meta-value font-bold text-indigo-700">{{ number_format($order->total) }} تومان</span></div>
+                    <div><span class="admin-meta-label">تاریخ</span><span class="admin-meta-value">{{ $order->created_at->format('Y/m/d') }}</span></div>
+                    <div class="col-span-2"><span class="admin-meta-label">کد تخفیف</span><span class="admin-meta-value font-mono text-amber-700">{{ $order->discount_code ?: 'بدون کد تخفیف' }}</span></div>
+                </div>
+            </div>
+            <div class="admin-list-card-footer">
+                <span class="text-[10px] text-gray-400">مشاهده اطلاعات کامل سفارش</span>
+                <a href="{{ route('admin.orders.show', $order) }}" class="inline-flex h-8 items-center gap-1 rounded-lg bg-indigo-50 px-3 text-[11px] font-semibold text-indigo-700 hover:bg-indigo-100"><iconify-icon icon="tabler:eye" class="text-sm"></iconify-icon>جزئیات</a>
+            </div>
+        </article>
+        @endforeach
     </div>
     @if($orders->hasPages())
-    <div class="border-t border-gray-100 px-5 py-4">
+    <div class="mt-6 border-t border-gray-100 pt-4">
         {{ $orders->links('admin.partials.pagination') }}
     </div>
     @endif

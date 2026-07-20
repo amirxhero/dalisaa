@@ -84,9 +84,22 @@ class Product extends Model implements HasMedia
         return $this->belongsTo(Brand::class);
     }
 
-    public function getBrandNameAttribute(): string
+    public function getBrandNameAttribute(): ?string
     {
-        return $this->brand?->title ?? (is_string($this->attributes['brand'] ?? null) ? $this->attributes['brand'] : '—');
+        if ($this->relationLoaded('brand') && $this->getRelation('brand')) {
+            return $this->getRelation('brand')->title;
+        }
+
+        if (!empty($this->brand_id)) {
+            $b = $this->brand()->first();
+            if ($b) {
+                return $b->title;
+            }
+        }
+
+        return is_string($this->attributes['brand'] ?? null) && $this->attributes['brand'] !== '' 
+            ? $this->attributes['brand'] 
+            : null;
     }
 
     public function category(): BelongsTo

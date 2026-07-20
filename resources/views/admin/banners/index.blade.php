@@ -32,73 +32,46 @@
         @if(!empty($hints[$key]))
             <p class="mb-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">{{ $hints[$key] }}</p>
         @endif
-        <x-admin.section>
+        <x-admin.section :padded="true">
             @php $items = $grouped[$key] ?? collect(); @endphp
             @if($items->isEmpty())
                 <x-admin.empty-state icon="tabler:photo-off" title="بنری برای این بخش ثبت نشده" description="با دکمه «بنر جدید» اضافه کنید." />
             @else
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                    <thead>
-                        <tr class="border-b border-gray-100 bg-gray-50/60">
-                            <th class="admin-th">پیش‌نمایش</th>
-                            <th class="admin-th">عنوان</th>
-                            <th class="admin-th">موبایل</th>
-                            <th class="admin-th">ترتیب</th>
-                            <th class="admin-th">وضعیت</th>
-                            <th class="admin-th">عملیات</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-50">
-                        @foreach($items as $banner)
-                        <tr class="transition-colors hover:bg-gray-50/60 {{ !$banner->is_active ? 'opacity-60' : '' }}">
-                            <td class="admin-td">
+            <div class="admin-index-grid">
+                @foreach($items as $banner)
+                <article class="group admin-list-card {{ !$banner->is_active ? 'bg-gray-50/70' : '' }}">
+                    <div class="relative h-28 overflow-hidden bg-gray-100">
                                 @if($banner->desktop_url)
-                                    <img src="{{ $banner->desktop_thumb }}" alt="" class="h-12 w-24 rounded-lg border border-gray-100 object-cover">
+                            <img src="{{ $banner->desktop_thumb }}" alt="{{ $banner->title }}" loading="lazy" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105">
                                 @else
-                                    <div class="flex h-12 w-24 items-center justify-center rounded-lg bg-gray-100 text-gray-300">
-                                        <iconify-icon icon="tabler:photo" class="text-lg"></iconify-icon>
-                                    </div>
+                            <div class="flex h-full items-center justify-center text-gray-300"><iconify-icon icon="tabler:photo" class="text-3xl"></iconify-icon></div>
                                 @endif
-                            </td>
-                            <td class="admin-td font-medium text-gray-900">{{ $banner->title ?: '—' }}</td>
-                            <td class="admin-td">
-                                @if($banner->getFirstMediaUrl('mobile'))
-                                    <span class="rounded-full bg-emerald-50 px-2 py-0.5 text-xs text-emerald-600">دارد</span>
-                                @else
-                                    <span class="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-400">ندارد</span>
-                                @endif
-                            </td>
-                            <td class="admin-td text-gray-500">{{ $banner->sort_order }}</td>
-                            <td class="admin-td">
-                                <form action="{{ route('admin.banners.toggle-active', $banner) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="rounded-full px-2.5 py-1 text-xs font-medium transition-colors
-                                        {{ $banner->is_active ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}">
-                                        {{ $banner->is_active ? 'فعال' : 'غیرفعال' }}
-                                    </button>
-                                </form>
-                            </td>
-                            <td class="admin-td">
-                                <div class="flex items-center gap-1.5">
-                                    <a href="{{ route('admin.banners.edit', $banner) }}" title="ویرایش"
-                                       class="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:border-indigo-300 hover:text-indigo-600">
-                                        <iconify-icon icon="tabler:pencil" class="text-sm"></iconify-icon>
-                                    </a>
-                                    <form action="{{ route('admin.banners.destroy', $banner) }}" method="POST"
-                                          onsubmit="return confirm('آیا مطمئن هستید؟ این عمل غیرقابل بازگشت است.')">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" title="حذف"
-                                                class="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-rose-500 transition-colors hover:border-rose-300 hover:bg-rose-50">
-                                            <iconify-icon icon="tabler:trash" class="text-sm"></iconify-icon>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        <div class="absolute left-2 top-2"><x-admin.badge tone="gray">ترتیب {{ $banner->sort_order }}</x-admin.badge></div>
+                    </div>
+                    <div class="admin-list-card-body">
+                        <h4 class="truncate text-sm font-bold text-gray-900">{{ $banner->title ?: 'بدون عنوان' }}</h4>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            <x-admin.badge :tone="$banner->getFirstMediaUrl('mobile') ? 'emerald' : 'gray'">
+                                <iconify-icon icon="tabler:device-mobile" class="text-xs"></iconify-icon>
+                                {{ $banner->getFirstMediaUrl('mobile') ? 'نسخه موبایل' : 'بدون نسخه موبایل' }}
+                            </x-admin.badge>
+                        </div>
+                    </div>
+                    <div class="admin-list-card-footer">
+                        <form action="{{ route('admin.banners.toggle-active', $banner) }}" method="POST">
+                            @csrf
+                            <button type="submit"><x-admin.badge :tone="$banner->is_active ? 'emerald' : 'gray'">{{ $banner->is_active ? 'فعال' : 'غیرفعال' }}</x-admin.badge></button>
+                        </form>
+                        <div class="flex items-center gap-1.5">
+                            <a href="{{ route('admin.banners.edit', $banner) }}" title="ویرایش" class="admin-icon-btn"><iconify-icon icon="tabler:pencil" class="text-sm"></iconify-icon></a>
+                            <form action="{{ route('admin.banners.destroy', $banner) }}" method="POST" onsubmit="return confirm('آیا مطمئن هستید؟ این عمل غیرقابل بازگشت است.')">
+                                @csrf @method('DELETE')
+                                <button type="submit" title="حذف" class="admin-icon-btn-danger"><iconify-icon icon="tabler:trash" class="text-sm"></iconify-icon></button>
+                            </form>
+                        </div>
+                    </div>
+                </article>
+                @endforeach
             </div>
             @endif
         </x-admin.section>

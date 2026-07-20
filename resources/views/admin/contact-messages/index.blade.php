@@ -17,64 +17,44 @@
     @endif
 </div>
 
-<x-admin.section>
+<x-admin.section :padded="true">
     @if($messages->isEmpty())
         <x-admin.empty-state icon="tabler:message-2" title="هنوز پیامی دریافت نشده" description="پیام‌های فرم تماس اینجا نمایش داده می‌شوند." />
     @else
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead>
-                <tr class="border-b border-gray-100 bg-gray-50/60">
-                    <th class="admin-th">فرستنده</th>
-                    <th class="admin-th">خلاصه پیام</th>
-                    <th class="admin-th">وضعیت</th>
-                    <th class="admin-th">تاریخ</th>
-                    <th class="admin-th">عملیات</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-50">
-                @foreach($messages as $message)
-                <tr class="transition-colors hover:bg-gray-50/60 {{ $message->status === 'new' ? 'bg-rose-50/30' : '' }}">
-                    <td class="admin-td">
-                        <p class="font-medium text-gray-900">{{ $message->name }}</p>
-                        <p class="text-xs text-gray-400" dir="ltr">{{ $message->email ?: $message->phone ?: '—' }}</p>
-                    </td>
-                    <td class="admin-td max-w-xs">
-                        <p class="truncate text-gray-600">{{ $message->message }}</p>
-                    </td>
-                    <td class="admin-td">
+    <div class="admin-index-grid">
+        @foreach($messages as $message)
+        <article class="admin-list-card {{ $message->status === 'new' ? 'border-rose-200 bg-rose-50/20' : '' }}">
+            <div class="admin-list-card-head">
+                <div class="flex min-w-0 items-center gap-3">
+                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-sm font-black text-indigo-600">{{ mb_substr($message->name, 0, 1) }}</span>
+                    <div class="min-w-0"><h3 class="truncate text-sm font-bold text-gray-900">{{ $message->name }}</h3><p class="truncate text-[10px] text-gray-400" dir="ltr">{{ $message->email ?: $message->phone ?: '—' }}</p></div>
+                </div>
                         @if($message->status === 'new')
-                            <span class="rounded-full bg-rose-50 px-2.5 py-1 text-xs font-medium text-rose-600">جدید</span>
+                    <x-admin.badge tone="rose">جدید</x-admin.badge>
                         @elseif($message->status === 'answered')
-                            <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-600">پاسخ داده شده</span>
+                    <x-admin.badge tone="emerald">پاسخ داده شده</x-admin.badge>
                         @else
-                            <span class="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-500">خوانده شده</span>
+                    <x-admin.badge tone="gray">خوانده شده</x-admin.badge>
                         @endif
-                    </td>
-                    <td class="admin-td text-xs text-gray-400">{{ $message->created_at->diffForHumans() }}</td>
-                    <td class="admin-td">
-                        <div class="flex items-center gap-1.5">
-                            <a href="{{ route('admin.contact-messages.show', $message) }}" title="مشاهده و پاسخ"
-                               class="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:border-indigo-300 hover:text-indigo-600">
-                                <iconify-icon icon="tabler:eye" class="text-sm"></iconify-icon>
-                            </a>
-                            <form action="{{ route('admin.contact-messages.destroy', $message) }}" method="POST"
-                                  onsubmit="return confirm('این پیام حذف شود؟')">
-                                @csrf @method('DELETE')
-                                <button type="submit" title="حذف"
-                                        class="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-rose-500 transition-colors hover:border-rose-300 hover:bg-rose-50">
-                                    <iconify-icon icon="tabler:trash" class="text-sm"></iconify-icon>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+            </div>
+            <div class="admin-list-card-body">
+                <p class="line-clamp-3 min-h-14 text-xs leading-5 text-gray-600">{{ $message->message }}</p>
+            </div>
+            <div class="admin-list-card-footer">
+                <span class="text-[10px] text-gray-400">{{ $message->created_at->diffForHumans() }}</span>
+                <div class="flex items-center gap-1.5">
+                    <a href="{{ route('admin.contact-messages.show', $message) }}" title="مشاهده و پاسخ" class="admin-icon-btn"><iconify-icon icon="tabler:eye" class="text-sm"></iconify-icon></a>
+                    <form action="{{ route('admin.contact-messages.destroy', $message) }}" method="POST" onsubmit="return confirm('این پیام حذف شود؟')">
+                        @csrf @method('DELETE')
+                        <button type="submit" title="حذف" class="admin-icon-btn-danger"><iconify-icon icon="tabler:trash" class="text-sm"></iconify-icon></button>
+                    </form>
+                </div>
+            </div>
+        </article>
+        @endforeach
     </div>
     @if($messages->hasPages())
-        <div class="border-t border-gray-100 px-5 py-3">{{ $messages->links() }}</div>
+        <div class="mt-6 border-t border-gray-100 pt-4">{{ $messages->links() }}</div>
     @endif
     @endif
 </x-admin.section>

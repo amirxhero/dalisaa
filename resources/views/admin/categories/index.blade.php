@@ -18,61 +18,46 @@
     </a>
 </div>
 
-<x-admin.section>
+<x-admin.section :padded="true">
     @if($categories->isEmpty())
         <x-admin.empty-state icon="tabler:folder-off" title="دسته‌بندی‌ای یافت نشد" description="اولین دسته‌بندی خود را اضافه کنید." />
     @else
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead>
-                <tr class="border-b border-gray-100 bg-gray-50/60">
-                    <th class="admin-th">نام</th>
-                    <th class="admin-th">نام انگلیسی</th>
-                    <th class="admin-th">اسلاگ</th>
-                    <th class="admin-th">والد</th>
-                    <th class="admin-th">آیکون</th>
-                    <th class="admin-th">ترتیب</th>
-                    <th class="admin-th">محصولات</th>
-                    <th class="admin-th">عملیات</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-50">
-                @foreach($categories as $cat)
-                @php $depth = $cat->depth ?? 0; @endphp
-                <tr class="transition-colors hover:bg-gray-50/60">
-                    <td class="admin-td font-medium {{ $depth > 0 ? 'text-gray-600' : 'text-gray-900' }}" style="padding-right: {{ $depth * 1.5 + 0.75 }}rem;">
-                        @if($depth > 0)
-                            <span class="text-gray-400 font-normal">└ </span>
-                        @endif
-                        {{ $cat->name }}
-                    </td>
-                    <td class="admin-td text-gray-500 font-mono text-xs" dir="ltr">{{ $cat->name_en ?? '—' }}</td>
-                    <td class="admin-td text-gray-500 font-mono text-xs" dir="ltr">{{ $cat->slug }}</td>
-                    <td class="admin-td text-gray-500">{{ $cat->parent?->name ?? '—' }}</td>
-                    <td class="admin-td text-gray-500">{{ $cat->icon ?? '—' }}</td>
-                    <td class="admin-td text-gray-500">{{ $cat->sort_order }}</td>
-                    <td class="admin-td">
-                        <x-admin.badge tone="gray">{{ $cat->products_count }}</x-admin.badge>
-                    </td>
-                    <td class="admin-td">
-                        <div class="flex items-center gap-1.5">
-                            <a href="{{ route('admin.categories.edit', $cat) }}" title="ویرایش"
-                               class="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:border-indigo-300 hover:text-indigo-600">
-                                <iconify-icon icon="tabler:pencil" class="text-sm"></iconify-icon>
-                            </a>
-                            <form action="{{ route('admin.categories.destroy', $cat) }}" method="POST" onsubmit="return confirm('حذف دسته‌بندی؟')">
-                                @csrf @method('DELETE')
-                                <button type="submit" title="حذف"
-                                        class="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 text-rose-500 transition-colors hover:border-rose-300 hover:bg-rose-50">
-                                    <iconify-icon icon="tabler:trash" class="text-sm"></iconify-icon>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+    <div class="admin-index-grid">
+        @foreach($categories as $cat)
+        @php $depth = $cat->depth ?? 0; @endphp
+        <article class="admin-list-card">
+            <div class="admin-list-card-head">
+                <div class="flex min-w-0 items-center gap-3">
+                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl {{ $depth > 0 ? 'bg-gray-100 text-gray-500' : 'bg-indigo-50 text-indigo-600' }}">
+                        <iconify-icon icon="{{ $cat->icon ?: 'tabler:folder' }}" class="text-xl"></iconify-icon>
+                    </span>
+                    <div class="min-w-0">
+                        <h3 class="truncate text-sm font-bold text-gray-900">{{ $cat->name }}</h3>
+                        <p class="truncate font-mono text-[10px] text-gray-400" dir="ltr">{{ $cat->name_en ?? $cat->slug }}</p>
+                    </div>
+                </div>
+                <x-admin.badge :tone="$depth > 0 ? 'gray' : 'indigo'">{{ $depth > 0 ? 'زیر‌دسته' : 'دسته اصلی' }}</x-admin.badge>
+            </div>
+            <div class="admin-list-card-body">
+                <div class="admin-meta-grid">
+                    <div><span class="admin-meta-label">دسته والد</span><span class="admin-meta-value">{{ $cat->parent?->name ?? 'بدون والد' }}</span></div>
+                    <div><span class="admin-meta-label">محصولات</span><x-admin.badge tone="gray">{{ $cat->products_count }} محصول</x-admin.badge></div>
+                    <div><span class="admin-meta-label">ترتیب نمایش</span><span class="admin-meta-value">{{ $cat->sort_order }}</span></div>
+                    <div><span class="admin-meta-label">اسلاگ</span><span class="admin-meta-value font-mono" dir="ltr">{{ $cat->slug }}</span></div>
+                </div>
+            </div>
+            <div class="admin-list-card-footer">
+                <span class="text-[10px] text-gray-400">سطح {{ $depth + 1 }}</span>
+                <div class="flex items-center gap-1.5">
+                    <a href="{{ route('admin.categories.edit', $cat) }}" title="ویرایش" class="admin-icon-btn"><iconify-icon icon="tabler:pencil" class="text-sm"></iconify-icon></a>
+                    <form action="{{ route('admin.categories.destroy', $cat) }}" method="POST" onsubmit="return confirm('حذف دسته‌بندی؟')">
+                        @csrf @method('DELETE')
+                        <button type="submit" title="حذف" class="admin-icon-btn-danger"><iconify-icon icon="tabler:trash" class="text-sm"></iconify-icon></button>
+                    </form>
+                </div>
+            </div>
+        </article>
+        @endforeach
     </div>
     @endif
 </x-admin.section>
