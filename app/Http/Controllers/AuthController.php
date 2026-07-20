@@ -32,11 +32,25 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ], [], ['login' => 'شماره موبایل یا ایمیل']);
 
-        $isEmail = filter_var($data['login'], FILTER_VALIDATE_EMAIL) !== false;
-        $field = $isEmail ? 'email' : 'mobile';
-        $identifier = $isEmail ? $data['login'] : $this->normalizeMobile($data['login']);
+        $login = $data['login'];
+        $isEmail = filter_var($login, FILTER_VALIDATE_EMAIL) !== false;
 
-        if (!Auth::attempt([$field => $identifier, 'password' => $data['password']], true)) {
+        if ($isEmail) {
+            $field = 'email';
+            $identifier = $login;
+        } else {
+            $normalizedMobile = $this->normalizeMobile($login);
+
+            if (preg_match('/^09[0-9]{9}$/', $normalizedMobile)) {
+                $field = 'mobile';
+                $identifier = $normalizedMobile;
+            } else {
+                $field = 'email';
+                $identifier = $login;
+            }
+        }
+
+        if (! Auth::attempt([$field => $identifier, 'password' => $data['password']], true)) {
             throw ValidationException::withMessages([
                 'login' => 'شماره موبایل/ایمیل یا رمز عبور اشتباه است.',
             ]);

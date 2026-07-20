@@ -73,8 +73,19 @@
             <h2 class="mb-5 text-base font-bold text-gray-900">اطلاعات پایه</h2>
             <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 <div class="sm:col-span-2">
-                    <label class="admin-label">نام محصول <span class="text-rose-500">*</span></label>
+                    <label class="admin-label">نام محصول (فارسی) <span class="text-rose-500">*</span></label>
                     <input type="text" name="title" value="{{ old('title') }}" required class="admin-input">
+                    @error('title') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label class="admin-label">نام انگلیسی (English Name)</label>
+                    <input type="text" name="name_en" value="{{ old('name_en') }}" placeholder="مثال: iPhone 15 Pro Max" dir="ltr" class="admin-input text-left">
+                    @error('name_en') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label class="admin-label">اسلاگ / URL یکتا (Slug)</label>
+                    <input type="text" name="slug" value="{{ old('slug') }}" placeholder="در صورت خالی بودن خودکار ایجاد می‌شود" dir="ltr" class="admin-input text-left font-mono">
+                    @error('slug') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
                 </div>
                 <div>
                     <label class="admin-label">برند <span class="text-rose-500">*</span></label>
@@ -86,7 +97,7 @@
                         <option value="">انتخاب کنید...</option>
                         @foreach($categories as $cat)
                         <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>
-                            {{ $cat->parent ? '└ ' : '' }}{{ $cat->name }}
+                            {{ str_repeat('── ', $cat->depth ?? 0) }}{{ $cat->name }}
                         </option>
                         @endforeach
                     </select>
@@ -172,17 +183,13 @@
             </div>
         </div>
 
-        {{-- ── STEP 3: Stock & SKU ─────────────────────────────────────── --}}
+        {{-- ── STEP 3: Stock ───────────────────────────────────────────── --}}
         <div x-show="step === 3" x-cloak>
-            <h2 class="mb-5 text-base font-bold text-gray-900">موجودی و شناسه</h2>
+            <h2 class="mb-5 text-base font-bold text-gray-900">موجودی و وضعیت</h2>
             <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                <div>
+                <div class="sm:col-span-2">
                     <label class="admin-label">موجودی انبار <span class="text-rose-500">*</span></label>
                     <input type="number" name="stock" value="{{ old('stock', 0) }}" min="0" required class="admin-input">
-                </div>
-                <div>
-                    <label class="admin-label">کد SKU <span class="text-rose-500">*</span></label>
-                    <input type="text" name="sku" value="{{ old('sku') }}" required placeholder="مثال: APL-IP15P" class="admin-input font-mono">
                 </div>
                 <div class="sm:col-span-2">
                     <label class="flex items-center gap-2 text-sm text-gray-700">

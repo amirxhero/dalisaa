@@ -11,19 +11,14 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::with('parent', 'children')
-            ->withCount('products')
-            ->orderBy('sort_order')
-            ->get();
+        $categories = Category::getTree();
 
-        $roots = $categories->whereNull('parent_id');
-
-        return view('admin.categories.index', compact('categories', 'roots'));
+        return view('admin.categories.index', compact('categories'));
     }
 
     public function create()
     {
-        $parents = Category::whereNull('parent_id')->orderBy('name')->get();
+        $parents = Category::getTree();
         return view('admin.categories.create', compact('parents'));
     }
 
@@ -31,12 +26,14 @@ class CategoryController extends Controller
     {
         $data = $request->validate([
             'name'       => 'required|string|max:100',
+            'name_en'    => 'nullable|string|max:100',
+            'slug'       => 'nullable|string|max:100|unique:categories,slug',
             'parent_id'  => 'nullable|exists:categories,id',
             'icon'       => 'nullable|string|max:50',
             'sort_order' => 'nullable|integer|min:0',
         ]);
 
-        $data['slug'] = Str::slug($data['name'].'-'.Str::random(4));
+        $data['slug'] = $this->generateSlug($data);
 
         Category::create($data);
 
@@ -46,10 +43,7 @@ class CategoryController extends Controller
 
     public function edit(Category $category)
     {
-        $parents = Category::whereNull('parent_id')
-            ->where('id', '!=', $category->id)
-            ->orderBy('name')
-            ->get();
+        $parents = Category::getTree($category->id);
 
         return view('admin.categories.edit', compact('category', 'parents'));
     }
@@ -58,15 +52,49 @@ class CategoryController extends Controller
     {
         $data = $request->validate([
             'name'       => 'required|string|max:100',
+            'name_en'    => 'nullable|string|max:100',
+            'slug'       => 'nullable|string|max:100|unique:categories,slug,'.$category->id,
             'parent_id'  => 'nullable|exists:categories,id',
             'icon'       => 'nullable|string|max:50',
             'sort_order' => 'nullable|integer|min:0',
         ]);
 
+        $data['slug'] = $this->generateSlug($data, $category->id);
+
+        if (!empty($data['parent_id'])) {
+            $descendants = $category->getDescendantsIds();
+            if ($data['parent_id'] == $category->id || in_array($data['parent_id'], $descendants)) {
+                return back()->withErrors(['parent_id' => 'دسته والد نمی‌تواند خود یا یکی از زیرمجموعه‌های این دسته باشد.'])->withInput();
+            }
+        }
+
         $category->update($data);
 
         return redirect()->route('admin.categories.index')
             ->with('success', 'دسته‌بندی با موفقیت ویرایش شد.');
+    }
+
+    private function generateSlug(array $data, ?int $ignoreId = null): string
+    {
+        if (!empty($data['slug'])) {
+            $baseSlug = Str::slug($data['slug']);
+        } else {
+            $raw = !empty($data['name_en']) ? $data['name_en'] : $data['name'];
+            $baseSlug = Str::slug($raw);
+            if (empty($baseSlug)) {
+                $baseSlug = 'category';
+            }
+        }
+
+        $slug = $baseSlug;
+        $counter = 1;
+
+        while (Category::where('slug', $slug)->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))->exists()) {
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
+        }
+
+        return $slug;
     }
 
     public function destroy(Category $category)

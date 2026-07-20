@@ -11,17 +11,31 @@
         <form action="{{ route('admin.categories.store') }}" method="POST" class="space-y-4 p-5">
             @csrf
             <div>
-                <label class="admin-label">نام دسته‌بندی *</label>
+                <label class="admin-label">نام دسته‌بندی (فارسی) *</label>
                 <input type="text" name="name" value="{{ old('name') }}" required class="admin-input">
+                @error('name') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label class="admin-label">نام انگلیسی (English Name)</label>
+                <input type="text" name="name_en" value="{{ old('name_en') }}" placeholder="مثال: Mobile Accessories" dir="ltr" class="admin-input text-left">
+                @error('name_en') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label class="admin-label">اسلاگ / نام مستعار یکتا (Slug)</label>
+                <input type="text" name="slug" value="{{ old('slug') }}" placeholder="در صورت خالی بودن خودکار ایجاد می‌شود" dir="ltr" class="admin-input text-left font-mono">
+                @error('slug') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label class="admin-label">دسته والد (اختیاری)</label>
                 <select name="parent_id" class="admin-select">
                     <option value="">بدون والد (دسته اصلی)</option>
                     @foreach($parents as $p)
-                    <option value="{{ $p->id }}" {{ old('parent_id') == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
+                    <option value="{{ $p->id }}" {{ old('parent_id') == $p->id ? 'selected' : '' }}>
+                        {{ str_repeat('── ', $p->depth ?? 0) }}{{ $p->name }}
+                    </option>
                     @endforeach
                 </select>
+                @error('parent_id') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label class="admin-label">آیکون (اختیاری)</label>

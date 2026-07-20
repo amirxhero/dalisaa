@@ -32,14 +32,14 @@ class ProductController extends Controller
         }
 
         $products    = $query->paginate(20)->withQueryString();
-        $categories  = Category::orderBy('name')->get();
+        $categories  = Category::getTree();
 
         return view('admin.products.index', compact('products', 'categories'));
     }
 
     public function create()
     {
-        $categories = Category::with('parent')->orderBy('name')->get();
+        $categories = Category::getTree();
         $currencies = CurrencyService::currencies();
         $rates      = CurrencyService::allRates();
 
@@ -50,10 +50,12 @@ class ProductController extends Controller
     {
         $data = $request->validate([
             'title'          => 'required|string|max:255',
+            'name_en'        => 'nullable|string|max:255',
+            'slug'           => 'nullable|string|max:255|unique:products,slug',
             'brand'          => 'required|string|max:100',
             'category_id'    => 'required|exists:categories,id',
             'description'    => 'required|string',
-            'sku'            => 'required|string|max:50|unique:products,sku',
+            'sku'            => 'nullable|string|max:50|unique:products,sku',
             'price_currency' => 'required|in:USD,EUR,USDT,GBP,IRR',
             'price_original' => 'required|numeric|min:0',
             'discount_type'  => 'nullable|in:none,percent,amount',
@@ -96,7 +98,13 @@ class ProductController extends Controller
 
         $data['discount_type'] = $discountType;
         $data['discount_value'] = $discountValue;
-        $data['slug']      = Str::slug($data['title'].'-'.Str::random(4));
+
+        $data['slug'] = $this->generateSlug($data);
+
+        if (empty($data['sku'])) {
+            $data['sku'] = $this->generateSku();
+        }
+
         $data['is_active'] = $request->boolean('is_active', true);
         $data['highlights'] = $this->normalizeHighlights($request->input('highlights'));
 
@@ -160,7 +168,7 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        $categories = Category::with('parent')->orderBy('name')->get();
+        $categories = Category::getTree();
         $currencies = CurrencyService::currencies();
         $rates      = CurrencyService::allRates();
 
@@ -171,10 +179,12 @@ class ProductController extends Controller
     {
         $data = $request->validate([
             'title'          => 'required|string|max:255',
+            'name_en'        => 'nullable|string|max:255',
+            'slug'           => 'nullable|string|max:255|unique:products,slug,'.$product->id,
             'brand'          => 'required|string|max:100',
             'category_id'    => 'required|exists:categories,id',
             'description'    => 'required|string',
-            'sku'            => 'required|string|max:50|unique:products,sku,'.$product->id,
+            'sku'            => 'nullable|string|max:50|unique:products,sku,'.$product->id,
             'price_currency' => 'required|in:USD,EUR,USDT,GBP,IRR',
             'price_original' => 'required|numeric|min:0',
             'discount_type'  => 'nullable|in:none,percent,amount',
@@ -218,6 +228,12 @@ class ProductController extends Controller
 
         $data['discount_type'] = $discountType;
         $data['discount_value'] = $discountValue;
+
+        $data['slug'] = $this->generateSlug($data, $product->id);
+        if (empty($data['sku'])) {
+            $data['sku'] = $product->sku ?: $this->generateSku();
+        }
+
         $data['is_active'] = $request->boolean('is_active');
         $data['highlights'] = $this->normalizeHighlights($request->input('highlights'));
 
@@ -332,5 +348,37 @@ class ProductController extends Controller
             ->all();
 
         return $normalized ?: null;
+    }
+
+    private function generateSlug(array $data, ?int $ignoreId = null): string
+    {
+        if (!empty($data['slug'])) {
+            $baseSlug = Str::slug($data['slug']);
+        } else {
+            $raw = !empty($data['name_en']) ? $data['name_en'] : $data['title'];
+            $baseSlug = Str::slug($raw);
+            if (empty($baseSlug)) {
+                $baseSlug = 'product';
+            }
+        }
+
+        $slug = $baseSlug;
+        $counter = 1;
+
+        while (Product::where('slug', $slug)->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))->exists()) {
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
+        }
+
+        return $slug;
+    }
+
+    private function generateSku(): string
+    {
+        do {
+            $sku = 'SLK-' . strtoupper(Str::random(3)) . '-' . rand(1000, 9999);
+        } while (Product::where('sku', $sku)->exists());
+
+        return $sku;
     }
 }

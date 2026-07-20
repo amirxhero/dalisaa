@@ -103,18 +103,22 @@ class HomeController extends Controller
     {
         return Category::roots()
             ->orderBy('sort_order')
-            ->withCount(['products' => fn ($q) => $q->where('is_active', true)])
-            ->with(['products' => fn ($q) => $q->where('is_active', true)->latest('id')->limit(4)->with('media')])
             ->get()
-            ->map(fn (Category $category) => [
-                'name'   => $category->name,
-                'slug'   => $category->slug,
-                'icon'   => $category->icon,
-                'count'  => $this->faDigits($category->products_count),
-                'href'   => route('category.show', $category),
-                'image'  => optional($category->products->first())->main_thumb ?: asset('images/product-placeholder.svg'),
-                'thumbs' => $category->products->map->main_thumb->all(),
-            ]);
+            ->map(function (Category $category) {
+                $catIds = $category->getAllCategoryIds();
+                $count = Product::whereIn('category_id', $catIds)->where('is_active', true)->count();
+                $products = Product::whereIn('category_id', $catIds)->where('is_active', true)->latest('id')->limit(4)->with('media')->get();
+
+                return [
+                    'name'   => $category->name,
+                    'slug'   => $category->slug,
+                    'icon'   => $category->icon,
+                    'count'  => $this->faDigits($count),
+                    'href'   => route('category.show', $category),
+                    'image'  => optional($products->first())->main_thumb ?: asset('images/product-placeholder.svg'),
+                    'thumbs' => $products->map->main_thumb->all(),
+                ];
+            });
     }
 
     /** Convert Latin digits to Persian for display. */
@@ -202,10 +206,11 @@ class HomeController extends Controller
         return Category::orderBy('sort_order')
             ->get()
             ->mapWithKeys(function (Category $category) {
+                $catIds = $category->getAllCategoryIds();
                 $products = Product::query()
                     ->active()
                     ->with(['category', 'variants'])
-                    ->where('category_id', $category->id)
+                    ->whereIn('category_id', $catIds)
                     ->orderByDesc('reviews_count_cache')
                     ->orderByDesc('rating_cache')
                     ->limit(8)

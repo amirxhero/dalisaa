@@ -50,8 +50,21 @@
             <x-admin.section title="اطلاعات پایه">
                 <div class="space-y-4 p-5">
                     <div>
-                        <label class="admin-label">نام محصول *</label>
+                        <label class="admin-label">نام محصول (فارسی) *</label>
                         <input type="text" name="title" value="{{ old('title', $product->title) }}" required class="admin-input">
+                        @error('title') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="admin-label">نام انگلیسی (English Name)</label>
+                            <input type="text" name="name_en" value="{{ old('name_en', $product->name_en) }}" placeholder="مثال: iPhone 15 Pro Max" dir="ltr" class="admin-input text-left">
+                            @error('name_en') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label class="admin-label">اسلاگ / URL یکتا (Slug)</label>
+                            <input type="text" name="slug" value="{{ old('slug', $product->slug) }}" dir="ltr" class="admin-input text-left font-mono">
+                            @error('slug') <p class="mt-1 text-xs text-rose-500">{{ $message }}</p> @enderror
+                        </div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
@@ -59,8 +72,8 @@
                             <input type="text" name="brand" value="{{ old('brand', $product->brand) }}" required class="admin-input">
                         </div>
                         <div>
-                            <label class="admin-label">کد SKU *</label>
-                            <input type="text" name="sku" value="{{ old('sku', $product->sku) }}" required class="admin-input font-mono">
+                            <label class="admin-label">کد SKU (سیستمی)</label>
+                            <input type="text" value="{{ $product->sku }}" readonly class="admin-input font-mono bg-gray-50 text-gray-500 cursor-not-allowed" title="کد یکتا به صورت خودکار توسط سیستم تولید می‌شود">
                         </div>
                     </div>
                     <div>
@@ -68,7 +81,7 @@
                         <select name="category_id" required class="admin-select">
                             @foreach($categories as $cat)
                             <option value="{{ $cat->id }}" {{ old('category_id', $product->category_id) == $cat->id ? 'selected' : '' }}>
-                                {{ $cat->parent ? '└ ' : '' }}{{ $cat->name }}
+                                {{ str_repeat('── ', $cat->depth ?? 0) }}{{ $cat->name }}
                             </option>
                             @endforeach
                         </select>

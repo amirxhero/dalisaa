@@ -14,6 +14,7 @@ class Category extends Model
     protected $fillable = [
         'parent_id',
         'name',
+        'name_en',
         'slug',
         'icon',
         'sort_order',
@@ -42,5 +43,68 @@ class Category extends Model
     public function scopeRoots($query)
     {
         return $query->whereNull('parent_id');
+    }
+
+    public function getDescendantsIds(): array
+    {
+        $ids = [];
+        foreach ($this->children as $child) {
+            $ids[] = $child->id;
+            $ids = array_merge($ids, $child->getDescendantsIds());
+        }
+        return $ids;
+    }
+
+    public function getAllCategoryIds(): array
+    {
+        return array_merge([$this->id], $this->getDescendantsIds());
+    }
+
+    /**
+     * Get a flattened collection of categories ordered hierarchically with a 'depth' attribute.
+     *
+     * @param int|null $excludeId Category ID (and its descendants) to exclude (e.g. for edit parent select)
+     */
+    public static function getTree(?int $excludeId = null)
+    {
+        $excludedIds = [];
+        if ($excludeId) {
+            $excludedIds[] = $excludeId;
+            $cat = static::with('children')->find($excludeId);
+            if ($cat) {
+                $excludedIds = array_merge($excludedIds, $cat->getDescendantsIds());
+            }
+        }
+
+        $all = static::with(['children', 'parent'])->withCount('products')->orderBy('sort_order')->orderBy('name')->get();
+
+        $flattened = collect();
+        $processed = [];
+
+        $traverse = function ($categories, $depth = 0) use (&$traverse, &$flattened, &$processed, $excludedIds) {
+            foreach ($categories as $category) {
+                if (in_array($category->id, $excludedIds) || in_array($category->id, $processed)) {
+                    continue;
+                }
+                $category->depth = $depth;
+                $processed[] = $category->id;
+                $flattened->push($category);
+
+                if ($category->children && $category->children->isNotEmpty()) {
+                    $traverse($category->children, $depth + 1);
+                }
+            }
+        };
+
+        $roots = $all->whereNull('parent_id');
+        $traverse($roots);
+
+        // Fallback for orphan categories whose parent_id might be invalid or non-existent
+        $remaining = $all->reject(fn ($c) => in_array($c->id, $processed) || in_array($c->id, $excludedIds));
+        if ($remaining->isNotEmpty()) {
+            $traverse($remaining, 0);
+        }
+
+        return $flattened;
     }
 }

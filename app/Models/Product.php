@@ -18,6 +18,7 @@ class Product extends Model implements HasMedia
         'category_id',
         'brand',
         'title',
+        'name_en',
         'slug',
         'sku',
         'description',

@@ -27,6 +27,8 @@
             <thead>
                 <tr class="border-b border-gray-100 bg-gray-50/60">
                     <th class="admin-th">نام</th>
+                    <th class="admin-th">نام انگلیسی</th>
+                    <th class="admin-th">اسلاگ</th>
                     <th class="admin-th">والد</th>
                     <th class="admin-th">آیکون</th>
                     <th class="admin-th">ترتیب</th>
@@ -36,10 +38,16 @@
             </thead>
             <tbody class="divide-y divide-gray-50">
                 @foreach($categories as $cat)
+                @php $depth = $cat->depth ?? 0; @endphp
                 <tr class="transition-colors hover:bg-gray-50/60">
-                    <td class="admin-td font-medium {{ $cat->parent_id ? 'pr-8 text-gray-600' : 'text-gray-900' }}">
-                        {{ $cat->parent_id ? '└ ' : '' }}{{ $cat->name }}
+                    <td class="admin-td font-medium {{ $depth > 0 ? 'text-gray-600' : 'text-gray-900' }}" style="padding-right: {{ $depth * 1.5 + 0.75 }}rem;">
+                        @if($depth > 0)
+                            <span class="text-gray-400 font-normal">└ </span>
+                        @endif
+                        {{ $cat->name }}
                     </td>
+                    <td class="admin-td text-gray-500 font-mono text-xs" dir="ltr">{{ $cat->name_en ?? '—' }}</td>
+                    <td class="admin-td text-gray-500 font-mono text-xs" dir="ltr">{{ $cat->slug }}</td>
                     <td class="admin-td text-gray-500">{{ $cat->parent?->name ?? '—' }}</td>
                     <td class="admin-td text-gray-500">{{ $cat->icon ?? '—' }}</td>
                     <td class="admin-td text-gray-500">{{ $cat->sort_order }}</td>

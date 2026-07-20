@@ -25,10 +25,14 @@ class NavigationMenu
     {
         return Category::roots()
             ->orderBy('sort_order')
-            ->with(['products' => fn ($q) => $q->where('is_active', true)->with('media')])
             ->get()
             ->map(function (Category $category) {
-                $products = $category->products;
+                $categoryIds = $category->getAllCategoryIds();
+
+                $products = Product::whereIn('category_id', $categoryIds)
+                    ->where('is_active', true)
+                    ->with('media')
+                    ->get();
 
                 if ($products->isEmpty()) {
                     return null;

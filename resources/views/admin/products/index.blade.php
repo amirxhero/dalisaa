@@ -29,7 +29,9 @@
     <select name="category" class="admin-select w-48">
         <option value="">همه دسته‌ها</option>
         @foreach($categories as $cat)
-            <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+            <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>
+                {{ str_repeat('── ', $cat->depth ?? 0) }}{{ $cat->name }}
+            </option>
         @endforeach
     </select>
     <select name="stock" class="admin-select w-44">
@@ -71,7 +73,10 @@
                             <img src="{{ $product->main_thumb }}" alt="" class="h-10 w-10 rounded-xl bg-gray-100 object-cover">
                             <div class="min-w-0">
                                 <p class="truncate font-medium text-gray-900">{{ $product->title }}</p>
-                                <p class="text-xs text-gray-400">{{ $product->brand }} · {{ $product->sku }}</p>
+                                @if($product->name_en)
+                                    <p class="truncate text-xs font-mono text-gray-500" dir="ltr">{{ $product->name_en }}</p>
+                                @endif
+                                <p class="text-xs text-gray-400">{{ $product->brand }} · {{ $product->sku }} · <span class="font-mono text-[11px]">{{ $product->slug }}</span></p>
                             </div>
                         </div>
                     </td>
