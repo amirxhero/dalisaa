@@ -51,7 +51,7 @@
     @if($products->isEmpty())
         <x-admin.empty-state icon="tabler:box-off" title="محصولی یافت نشد" description="فیلترها را تغییر دهید یا محصول جدیدی اضافه کنید." />
     @else
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+    <div class="admin-products-grid">
         @foreach($products as $product)
         <article class="group flex min-h-72 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-[0_3px_14px_-8px_rgba(15,23,42,0.25)] transition duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-[0_14px_30px_-16px_rgba(79,70,229,0.35)] {{ !$product->is_active ? 'bg-gray-50/70' : '' }}">
             {{-- Card badges --}}
@@ -116,7 +116,7 @@
                     </h3>
 
                     @if($product->name_en)
-                        <p class="mt-1 truncate text-left font-mono text-[10px] text-gray-400" dir="ltr">{{ $product->name_en }}</p>
+                        <p class="mt-1 truncate text-right font-mono text-[10px] text-gray-400" dir="ltr">{{ $product->name_en }}</p>
                     @endif
 
                     <div class="mt-2 flex min-w-0 items-center gap-1.5 text-[10px]">

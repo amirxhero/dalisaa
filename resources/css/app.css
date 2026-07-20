@@ -216,6 +216,20 @@
         @apply grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3;
     }
 
+    /* Product management is intentionally a fixed three-column desktop grid.
+       Keeping this as a named rule avoids production CSS purging arbitrary grid values. */
+    .admin-products-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    @media (max-width: 767px) {
+        .admin-products-grid {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+
     .admin-list-card {
         @apply flex min-w-0 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-[0_3px_14px_-8px_rgba(15,23,42,0.25)] transition duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-[0_14px_30px_-16px_rgba(79,70,229,0.28)];
     }
