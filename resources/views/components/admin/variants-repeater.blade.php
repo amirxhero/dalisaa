@@ -19,13 +19,17 @@
         $initialItems = collect($initialItems)->map(function ($item) {
             // Support both Eloquent models (toArray) and plain arrays (old() post data)
             $arr = is_object($item) ? $item->toArray() : (array) $item;
-            $basePrice = $arr['regular_price'] ?? $arr['price'] ?? '';
+
+            // Use price_original (raw currency amount as entered by admin) for display.
+            // Fallback to base_price (from old() post data), then to Toman price as last resort.
+            $basePrice = $arr['price_original'] ?? $arr['base_price'] ?? '';
+
             return [
                 'id'             => $arr['id'] ?? null,
                 'color_name'     => $arr['color_name'] ?? '',
                 'color_hex'      => $arr['color_hex'] ?? '',
                 'price_currency' => $arr['price_currency'] ?? 'IRR',
-                'base_price'     => $basePrice,
+                'base_price'     => $basePrice !== '' ? (float) $basePrice : '',
                 'discount_type'  => $arr['discount_type'] ?? 'none',
                 'discount_value' => $arr['discount_value'] ?? 0,
                 'stock'          => $arr['stock'] ?? 0,

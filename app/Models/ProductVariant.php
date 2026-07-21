@@ -16,6 +16,7 @@ class ProductVariant extends Model
         'color_hex',
         'price',
         'price_currency',
+        'price_original',
         'regular_price',
         'discount_type',
         'discount_value',
@@ -26,7 +27,8 @@ class ProductVariant extends Model
     protected function casts(): array
     {
         return [
-            'is_default' => 'boolean',
+            'is_default'     => 'boolean',
+            'price_original' => 'float',
         ];
     }
 
