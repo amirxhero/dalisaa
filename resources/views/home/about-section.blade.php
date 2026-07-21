@@ -9,7 +9,7 @@
 
     <div class="relative mx-auto max-w-4xl px-6 text-center text-white">
         <h6 class="mb-2 text-xs font-bold uppercase tracking-widest text-brand-400">فروشگاه</h6>
-        <h2 class="mb-5 text-2xl font-extrabold sm:text-3xl">دیجی کالا</h2>
+        <h2 class="mb-5 text-2xl font-extrabold sm:text-3xl">دالیسا</h2>
         <p class="mx-auto mb-8 max-w-2xl text-sm leading-8 text-white/70">
             با بیش از سی سال سابقه خدمت به مشتریان در زمینه فروش ابزارآلات صنعتی و کارگاهی، و با گردهم آوردن متخصصان این عرصه، بالغ بر ده سال است که این مجموعه را به‌صورت تخصصی در زمینه فروش کالای دیجیتال عرضه کرده است. همچنین برای ارائه هرچه تمام‌تر خدمات خود، فروشگاه اینترنتی را راه‌اندازی نموده و همچنان با سرعت هرچه تمام‌تر در حال به‌روزرسانی فعالیت‌های خود و ارائه انواع خدمات به مشتریان گرامی در سراسر ایران به‌صورت حضوری و آنلاین می‌باشد.
         </p>
