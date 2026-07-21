@@ -75,13 +75,14 @@ class ProductController extends Controller
             'images'               => 'nullable|array',
             'images.*'             => 'image|max:5120',
             'variants'             => 'nullable|array',
-            'variants.*.color_name' => 'required_with:variants|string|max:100',
-            'variants.*.color_hex' => 'nullable|string|regex:/^#[0-9a-fA-F]{6}$/',
-            'variants.*.base_price' => 'nullable|integer|min:0',
-            'variants.*.discount_type' => 'nullable|in:none,percent,amount',
-            'variants.*.discount_value' => 'nullable|integer|min:0',
-            'variants.*.stock'     => 'required_with:variants|integer|min:0',
-            'variants.*.is_default' => 'nullable',
+            'variants.*.color_name'      => 'required_with:variants|string|max:100',
+            'variants.*.color_hex'       => 'nullable|string|regex:/^#[0-9a-fA-F]{6}$/',
+            'variants.*.price_currency'  => 'nullable|in:USD,EUR,USDT,GBP,IRR',
+            'variants.*.base_price'      => 'nullable|numeric|min:0',
+            'variants.*.discount_type'   => 'nullable|in:none,percent,amount',
+            'variants.*.discount_value'  => 'nullable|integer|min:0',
+            'variants.*.stock'           => 'required_with:variants|integer|min:0',
+            'variants.*.is_default'      => 'nullable',
         ]);
 
         $baseToman = CurrencyService::toToman(
@@ -89,7 +90,7 @@ class ProductController extends Controller
             $data['price_currency']
         );
 
-        $discountType = $data['discount_type'] ?? 'none';
+        $discountType  = $data['discount_type'] ?? 'none';
         $discountValue = (int) ($data['discount_value'] ?? 0);
 
         if ($discountType === 'percent') {
@@ -103,17 +104,16 @@ class ProductController extends Controller
             $data['price'] = $baseToman;
         }
 
-        $data['discount_type'] = $discountType;
+        $data['discount_type']  = $discountType;
         $data['discount_value'] = $discountValue;
-
-        $data['slug'] = $this->generateSlug($data);
+        $data['slug']           = $this->generateSlug($data);
 
         if (empty($data['sku'])) {
             $data['sku'] = $this->generateSku();
         }
 
-        $data['is_active'] = $request->boolean('is_active', true);
-        $data['highlights'] = $this->normalizeHighlights($request->input('highlights'));
+        $data['is_active']   = $request->boolean('is_active', true);
+        $data['highlights']  = $this->normalizeHighlights($request->input('highlights'));
 
         if (!empty($data['variants'])) {
             $data['stock'] = collect($data['variants'])->sum('stock');
@@ -123,37 +123,40 @@ class ProductController extends Controller
 
         if (!empty($data['variants'])) {
             foreach ($data['variants'] as $v) {
-                $vBase = !empty($v['base_price']) ? (int) $v['base_price'] : null;
-                $vType = $v['discount_type'] ?? 'none';
-                $vValue = (int) ($v['discount_value'] ?? 0);
+                $vCurrency = $v['price_currency'] ?? 'IRR';
+                $vBaseRaw  = !empty($v['base_price']) ? (float) $v['base_price'] : null;
+                $vBase     = $vBaseRaw !== null ? CurrencyService::toToman($vBaseRaw, $vCurrency) : null;
+                $vType     = $v['discount_type'] ?? 'none';
+                $vValue    = (int) ($v['discount_value'] ?? 0);
 
                 if ($vBase !== null) {
                     if ($vType === 'percent') {
-                        $vReg = $vBase;
+                        $vReg   = $vBase;
                         $vPrice = max(0, (int) round($vBase * (1 - $vValue / 100)));
                     } elseif ($vType === 'amount') {
-                        $vReg = $vBase;
+                        $vReg   = $vBase;
                         $vPrice = max(0, $vBase - $vValue);
                     } else {
-                        $vReg = null;
+                        $vReg   = null;
                         $vPrice = $vBase;
                     }
                 } else {
-                    $vReg = null;
+                    $vReg   = null;
                     $vPrice = null;
-                    $vType = 'none';
+                    $vType  = 'none';
                     $vValue = 0;
                 }
 
                 $product->variants()->create([
-                    'color_name' => $v['color_name'],
-                    'color_hex' => !empty($v['color_hex']) ? $v['color_hex'] : null,
-                    'price' => $vPrice,
-                    'regular_price' => $vReg,
-                    'discount_type' => $vType,
+                    'color_name'     => $v['color_name'],
+                    'color_hex'      => !empty($v['color_hex']) ? $v['color_hex'] : null,
+                    'price'          => $vPrice,
+                    'price_currency' => $vCurrency,
+                    'regular_price'  => $vReg,
+                    'discount_type'  => $vType,
                     'discount_value' => $vValue,
-                    'stock' => $v['stock'],
-                    'is_default' => (bool) ($v['is_default'] ?? false),
+                    'stock'          => $v['stock'],
+                    'is_default'     => (bool) ($v['is_default'] ?? false),
                 ]);
             }
         }
@@ -205,14 +208,15 @@ class ProductController extends Controller
             'images'               => 'nullable|array',
             'images.*'             => 'image|max:5120',
             'variants'             => 'nullable|array',
-            'variants.*.id'        => 'nullable|integer',
-            'variants.*.color_name' => 'required_with:variants|string|max:100',
-            'variants.*.color_hex' => 'nullable|string|regex:/^#[0-9a-fA-F]{6}$/',
-            'variants.*.base_price' => 'nullable|integer|min:0',
-            'variants.*.discount_type' => 'nullable|in:none,percent,amount',
-            'variants.*.discount_value' => 'nullable|integer|min:0',
-            'variants.*.stock'     => 'required_with:variants|integer|min:0',
-            'variants.*.is_default' => 'nullable',
+            'variants.*.id'              => 'nullable|integer',
+            'variants.*.color_name'      => 'required_with:variants|string|max:100',
+            'variants.*.color_hex'       => 'nullable|string|regex:/^#[0-9a-fA-F]{6}$/',
+            'variants.*.price_currency'  => 'nullable|in:USD,EUR,USDT,GBP,IRR',
+            'variants.*.base_price'      => 'nullable|numeric|min:0',
+            'variants.*.discount_type'   => 'nullable|in:none,percent,amount',
+            'variants.*.discount_value'  => 'nullable|integer|min:0',
+            'variants.*.stock'           => 'required_with:variants|integer|min:0',
+            'variants.*.is_default'      => 'nullable',
         ]);
 
         $baseToman = CurrencyService::toToman(
@@ -220,7 +224,7 @@ class ProductController extends Controller
             $data['price_currency']
         );
 
-        $discountType = $data['discount_type'] ?? 'none';
+        $discountType  = $data['discount_type'] ?? 'none';
         $discountValue = (int) ($data['discount_value'] ?? 0);
 
         if ($discountType === 'percent') {
@@ -234,15 +238,15 @@ class ProductController extends Controller
             $data['price'] = $baseToman;
         }
 
-        $data['discount_type'] = $discountType;
+        $data['discount_type']  = $discountType;
         $data['discount_value'] = $discountValue;
+        $data['slug']           = $this->generateSlug($data, $product->id);
 
-        $data['slug'] = $this->generateSlug($data, $product->id);
         if (empty($data['sku'])) {
             $data['sku'] = $product->sku ?: $this->generateSku();
         }
 
-        $data['is_active'] = $request->boolean('is_active');
+        $data['is_active']  = $request->boolean('is_active');
         $data['highlights'] = $this->normalizeHighlights($request->input('highlights'));
 
         if (!empty($data['variants'])) {
@@ -254,37 +258,40 @@ class ProductController extends Controller
         if (!empty($data['variants'])) {
             $keptIds = [];
             foreach ($data['variants'] as $v) {
-                $vBase = !empty($v['base_price']) ? (int) $v['base_price'] : null;
-                $vType = $v['discount_type'] ?? 'none';
-                $vValue = (int) ($v['discount_value'] ?? 0);
+                $vCurrency = $v['price_currency'] ?? 'IRR';
+                $vBaseRaw  = !empty($v['base_price']) ? (float) $v['base_price'] : null;
+                $vBase     = $vBaseRaw !== null ? CurrencyService::toToman($vBaseRaw, $vCurrency) : null;
+                $vType     = $v['discount_type'] ?? 'none';
+                $vValue    = (int) ($v['discount_value'] ?? 0);
 
                 if ($vBase !== null) {
                     if ($vType === 'percent') {
-                        $vReg = $vBase;
+                        $vReg   = $vBase;
                         $vPrice = max(0, (int) round($vBase * (1 - $vValue / 100)));
                     } elseif ($vType === 'amount') {
-                        $vReg = $vBase;
+                        $vReg   = $vBase;
                         $vPrice = max(0, $vBase - $vValue);
                     } else {
-                        $vReg = null;
+                        $vReg   = null;
                         $vPrice = $vBase;
                     }
                 } else {
-                    $vReg = null;
+                    $vReg   = null;
                     $vPrice = null;
-                    $vType = 'none';
+                    $vType  = 'none';
                     $vValue = 0;
                 }
 
                 $variantData = [
-                    'color_name' => $v['color_name'],
-                    'color_hex' => !empty($v['color_hex']) ? $v['color_hex'] : null,
-                    'price' => $vPrice,
-                    'regular_price' => $vReg,
-                    'discount_type' => $vType,
+                    'color_name'     => $v['color_name'],
+                    'color_hex'      => !empty($v['color_hex']) ? $v['color_hex'] : null,
+                    'price'          => $vPrice,
+                    'price_currency' => $vCurrency,
+                    'regular_price'  => $vReg,
+                    'discount_type'  => $vType,
                     'discount_value' => $vValue,
-                    'stock' => $v['stock'],
-                    'is_default' => (bool) ($v['is_default'] ?? false),
+                    'stock'          => $v['stock'],
+                    'is_default'     => (bool) ($v['is_default'] ?? false),
                 ];
 
                 if (!empty($v['id'])) {
@@ -298,7 +305,6 @@ class ProductController extends Controller
             }
             $product->variants()->whereNotIn('id', $keptIds)->delete();
         } else {
-            // Delete all variants if none provided (returned to flat product status)
             $product->variants()->delete();
         }
 
@@ -341,7 +347,7 @@ class ProductController extends Controller
             'slug'    => null,
         ]);
 
-        $newProduct->sku = $this->generateSku();
+        $newProduct->sku       = $this->generateSku();
         $newProduct->is_active = false;
         $newProduct->save();
 
@@ -408,7 +414,7 @@ class ProductController extends Controller
             }
         }
 
-        $slug = $baseSlug;
+        $slug    = $baseSlug;
         $counter = 1;
 
         while (Product::where('slug', $slug)->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))->exists()) {

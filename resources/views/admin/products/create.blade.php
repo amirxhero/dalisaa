@@ -207,6 +207,7 @@
                     </label>
                 </div>
                 <div class="sm:col-span-2 border-t border-gray-100 pt-5 mt-2">
+                    <h3 class="mb-4 text-sm font-bold text-gray-800">تنوع متغیرها و قیمت‌گذاری</h3>
                     <x-admin.variants-repeater />
                 </div>
             </div>

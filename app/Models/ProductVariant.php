@@ -15,6 +15,7 @@ class ProductVariant extends Model
         'color_name',
         'color_hex',
         'price',
+        'price_currency',
         'regular_price',
         'discount_type',
         'discount_value',
