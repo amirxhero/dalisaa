@@ -48,7 +48,12 @@ class Story extends Model implements HasMedia
 
     public function getCoverUrlAttribute(): string
     {
-        return $this->getFirstMediaUrl('slides', 'thumb') ?: asset('images/product-placeholder.svg');
+        $media = $this->getFirstMedia('slides');
+        if ($media && $media->hasGeneratedConversion('thumb')) {
+            return $media->getUrl('thumb');
+        }
+
+        return $this->getFirstMediaUrl('slides') ?: asset('images/product-placeholder.svg');
     }
 
     public function getSlideUrlsAttribute(): array

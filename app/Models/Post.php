@@ -52,9 +52,12 @@ class Post extends Model implements HasMedia
 
     public function getCoverUrlAttribute(): string
     {
-        return $this->getFirstMediaUrl('cover', 'thumb')
-            ?: $this->getFirstMediaUrl('cover')
-            ?: '';
+        $media = $this->getFirstMedia('cover');
+        if ($media && $media->hasGeneratedConversion('thumb')) {
+            return $media->getUrl('thumb');
+        }
+
+        return $media ? $media->getUrl() : '';
     }
 
     public function getRouteKeyName(): string

@@ -60,7 +60,12 @@ class Brand extends Model implements HasMedia
 
     public function getImageThumbAttribute(): ?string
     {
-        return $this->getFirstMediaUrl('image', 'thumb') ?: $this->image_url;
+        $media = $this->getFirstMedia('image');
+        if ($media && $media->hasGeneratedConversion('thumb')) {
+            return $media->getUrl('thumb');
+        }
+
+        return $this->image_url;
     }
 
     public function __toString(): string

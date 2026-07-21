@@ -71,7 +71,12 @@ class Banner extends Model implements HasMedia
 
     public function getDesktopThumbAttribute(): string
     {
-        return $this->getFirstMediaUrl('desktop', 'thumb') ?: $this->desktop_url;
+        $media = $this->getFirstMedia('desktop');
+        if ($media && $media->hasGeneratedConversion('thumb')) {
+            return $media->getUrl('thumb');
+        }
+
+        return $this->desktop_url;
     }
 
     /** Falls back to the desktop image when no dedicated mobile image is set. */

@@ -141,7 +141,12 @@ class Product extends Model implements HasMedia
 
     public function getMainThumbAttribute(): string
     {
-        return $this->getFirstMediaUrl('gallery', 'thumb') ?: $this->main_image;
+        $media = $this->getFirstMedia('gallery');
+        if ($media && $media->hasGeneratedConversion('thumb')) {
+            return $media->getUrl('thumb');
+        }
+
+        return $this->main_image;
     }
 
     public function getGalleryUrlsAttribute(): array
