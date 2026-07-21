@@ -28,9 +28,13 @@
         <article class="admin-list-card">
             <div class="admin-list-card-head">
                 <div class="flex min-w-0 items-center gap-3">
-                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl {{ $depth > 0 ? 'bg-gray-100 text-gray-500' : 'bg-indigo-50 text-indigo-600' }}">
-                        <iconify-icon icon="{{ $cat->icon ?: 'tabler:folder' }}" class="text-xl"></iconify-icon>
-                    </span>
+                    @if($cat->image_url)
+                        <img src="{{ $cat->image_thumb }}" alt="" class="h-11 w-11 shrink-0 rounded-xl border border-gray-200 bg-gray-50 object-contain p-1">
+                    @else
+                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl {{ $depth > 0 ? 'bg-gray-100 text-gray-500' : 'bg-indigo-50 text-indigo-600' }}">
+                            <iconify-icon icon="{{ $cat->icon ?: 'tabler:folder' }}" class="text-xl"></iconify-icon>
+                        </span>
+                    @endif
                     <div class="min-w-0">
                         <h3 class="truncate text-sm font-bold text-gray-900">{{ $cat->name }}</h3>
                         <p class="truncate font-mono text-[10px] text-gray-400" dir="ltr">{{ $cat->name_en ?? $cat->slug }}</p>

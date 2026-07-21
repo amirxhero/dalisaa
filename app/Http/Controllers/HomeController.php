@@ -96,29 +96,73 @@ class HomeController extends Controller
     }
 
     /**
-     * Root categories with their active product count and a few sample
-     * product thumbnails, for the homepage category showcase section.
+     * A flat list of categories to display as grid tiles on the homepage.
+     * Leaf (child) categories are shown first; root categories that have no
+     * children are appended at the end. Only categories with ≥1 active product
+     * are included.
      */
     private function categoryShowcase(): Collection
     {
-        return Category::roots()
+        $roots = Category::roots()
+            ->with(['children' => fn ($q) => $q->orderBy('sort_order')])
             ->orderBy('sort_order')
-            ->get()
-            ->map(function (Category $category) {
-                $catIds = $category->getAllCategoryIds();
-                $count = Product::whereIn('category_id', $catIds)->where('is_active', true)->count();
-                $products = Product::whereIn('category_id', $catIds)->where('is_active', true)->latest('id')->limit(4)->with('media')->get();
+            ->get();
 
-                return [
-                    'name'   => $category->name,
-                    'slug'   => $category->slug,
-                    'icon'   => $category->icon,
-                    'count'  => $this->faDigits($count),
-                    'href'   => route('category.show', $category),
-                    'image'  => optional($products->first())->main_thumb ?: asset('images/product-placeholder.svg'),
-                    'thumbs' => $products->map->main_thumb->all(),
-                ];
-            });
+        $items = collect();
+
+        foreach ($roots as $root) {
+            if ($root->children->isNotEmpty()) {
+                // Show each subcategory as an individual tile
+                foreach ($root->children as $child) {
+                    $childIds = $child->getAllCategoryIds();
+                    $count    = Product::whereIn('category_id', $childIds)->where('is_active', true)->count();
+                    if ($count === 0) continue;
+
+                    $image = $child->image_url;
+
+                    if (!$image) {
+                        $image = Product::whereIn('category_id', $childIds)
+                            ->where('is_active', true)
+                            ->with('media')
+                            ->latest('id')
+                            ->first()
+                            ?->main_thumb ?? asset('images/product-placeholder.svg');
+                    }
+
+                    $items->push([
+                        'name'  => $child->name,
+                        'href'  => route('category.show', $child),
+                        'image' => $image,
+                        'count' => $this->faDigits($count),
+                    ]);
+                }
+            } else {
+                // Root has no children — show it directly as a tile
+                $rootIds = $root->getAllCategoryIds();
+                $count   = Product::whereIn('category_id', $rootIds)->where('is_active', true)->count();
+                if ($count === 0) continue;
+
+                $image = $root->image_url;
+
+                if (!$image) {
+                    $image = Product::whereIn('category_id', $rootIds)
+                        ->where('is_active', true)
+                        ->with('media')
+                        ->latest('id')
+                        ->first()
+                        ?->main_thumb ?? asset('images/product-placeholder.svg');
+                }
+
+                $items->push([
+                    'name'  => $root->name,
+                    'href'  => route('category.show', $root),
+                    'image' => $image,
+                    'count' => $this->faDigits($count),
+                ]);
+            }
+        }
+
+        return $items;
     }
 
     /** Convert Latin digits to Persian for display. */

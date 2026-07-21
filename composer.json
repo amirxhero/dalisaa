@@ -11,6 +11,7 @@
         "laravel/tinker": "^2.10.1",
         "morilog/jalali": "3.5",
         "shetabit/payment": "6.3",
+        "spatie/laravel-backup": "*",
         "spatie/laravel-medialibrary": "^11.23"
     },
     "require-dev": {

@@ -48,8 +48,9 @@
         [
             'label' => 'پیکربندی',
             'items' => [
-                ['route' => 'admin.settings.index', 'label' => 'تنظیمات', 'icon' => 'tabler:settings'],
-                ['route' => 'admin.account.edit',   'label' => 'حساب کاربری', 'icon' => 'tabler:user-cog'],
+                ['route' => 'admin.backups.index',  'label' => 'پشتیبان‌گیری (بکاپ)', 'icon' => 'tabler:database-export'],
+                ['route' => 'admin.settings.index', 'label' => 'تنظیمات',             'icon' => 'tabler:settings'],
+                ['route' => 'admin.account.edit',   'label' => 'حساب کاربری',         'icon' => 'tabler:user-cog'],
             ],
         ],
     ];

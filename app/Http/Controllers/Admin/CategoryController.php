@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\WebpImageService;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -31,11 +32,16 @@ class CategoryController extends Controller
             'parent_id'  => 'nullable|exists:categories,id',
             'icon'       => 'nullable|string|max:50',
             'sort_order' => 'nullable|integer|min:0',
+            'image'      => 'nullable|image|max:5120',
         ]);
 
         $data['slug'] = $this->generateSlug($data);
 
-        Category::create($data);
+        $category = Category::create($data);
+
+        if ($request->hasFile('image')) {
+            app(WebpImageService::class)->addToMediaCollection($category, $request->file('image'), 'image');
+        }
 
         return redirect()->route('admin.categories.index')
             ->with('success', 'دسته‌بندی با موفقیت ایجاد شد.');
@@ -57,6 +63,7 @@ class CategoryController extends Controller
             'parent_id'  => 'nullable|exists:categories,id',
             'icon'       => 'nullable|string|max:50',
             'sort_order' => 'nullable|integer|min:0',
+            'image'      => 'nullable|image|max:5120',
         ]);
 
         $data['slug'] = $this->generateSlug($data, $category->id);
@@ -69,6 +76,11 @@ class CategoryController extends Controller
         }
 
         $category->update($data);
+
+        if ($request->hasFile('image')) {
+            $category->clearMediaCollection('image');
+            app(WebpImageService::class)->addToMediaCollection($category, $request->file('image'), 'image');
+        }
 
         return redirect()->route('admin.categories.index')
             ->with('success', 'دسته‌بندی با موفقیت ویرایش شد.');

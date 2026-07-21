@@ -7,9 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Category extends Model
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+
+class Category extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
     protected $fillable = [
         'parent_id',
@@ -106,5 +110,35 @@ class Category extends Model
         }
 
         return $flattened;
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('image')->singleFile();
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->format('webp')
+            ->quality(85)
+            ->width(200)
+            ->height(200)
+            ->nonQueued();
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->getFirstMediaUrl('image') ?: null;
+    }
+
+    public function getImageThumbAttribute(): ?string
+    {
+        $media = $this->getFirstMedia('image');
+        if ($media && $media->hasGeneratedConversion('thumb')) {
+            return $media->getUrl('thumb');
+        }
+
+        return $this->image_url;
     }
 }

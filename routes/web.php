@@ -107,6 +107,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     Route::get('account', [Admin\AccountController::class, 'edit'])->name('account.edit');
     Route::put('account', [Admin\AccountController::class, 'update'])->name('account.update');
+
+    Route::get('backups', [Admin\BackupController::class, 'index'])->name('backups.index');
+    Route::post('backups/create', [Admin\BackupController::class, 'create'])->name('backups.create');
+    Route::get('backups/download/{filename}', [Admin\BackupController::class, 'download'])->name('backups.download');
+    Route::delete('backups/{filename}', [Admin\BackupController::class, 'destroy'])->name('backups.destroy');
 });
 
 // The gateway redirects the browser back here; must stay outside the auth
